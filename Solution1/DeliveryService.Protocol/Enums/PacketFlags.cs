@@ -3,5 +3,6 @@ namespace DeliveryService.Protocol.Enums;
 [Flags]
 public enum PacketFlags : byte
 {
-    Ack = 0x01,
+    None = 0x00,
+    NeedAck = 0x01,
 }
