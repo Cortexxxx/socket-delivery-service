@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService.Client", "D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService.Robot", "DeliveryService.Robot\DeliveryService.Robot.csproj", "{4742BBAF-3190-4D93-9AE3-933D8CF3E3CB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService.Tests", "DeliveryService.Tests\DeliveryService.Tests.csproj", "{28236276-433F-42EF-8D71-D842150D9D83}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{4742BBAF-3190-4D93-9AE3-933D8CF3E3CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4742BBAF-3190-4D93-9AE3-933D8CF3E3CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4742BBAF-3190-4D93-9AE3-933D8CF3E3CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28236276-433F-42EF-8D71-D842150D9D83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28236276-433F-42EF-8D71-D842150D9D83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28236276-433F-42EF-8D71-D842150D9D83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28236276-433F-42EF-8D71-D842150D9D83}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
