@@ -1,4 +1,5 @@
 using DeliveryService.Protocol;
+using DeliveryService.Protocol.Constants;
 using DeliveryService.Protocol.Enums;
 
 namespace DeliveryService.Tests;
@@ -22,7 +23,7 @@ public class PacketHeaderTests
 
     private Span<byte> GetHeaderBytes(PacketHeader header)
     {
-        var buffer = new byte[Constants.HeaderSize + header.PayloadLength];
+        var buffer = new byte[HeaderConstants.HeaderSize + header.PayloadLength];
         if (!PacketHeader.TrySerialize(header, buffer)) throw new Exception();
         return buffer;
     }
@@ -47,7 +48,7 @@ public class PacketHeaderTests
     
     [Theory]
     [InlineData(0x1234, PacketFlags.NeedAck, MessageType.Hello, 0x0201)]
-    [InlineData(0x1234, PacketFlags.NeedAck, MessageType.Telemetry, Constants.MaxPayloadSize)]
+    [InlineData(0x1234, PacketFlags.NeedAck, MessageType.Telemetry, HeaderConstants.MaxPayloadSize)]
     [InlineData(ushort.MaxValue, PacketFlags.NeedAck, MessageType.Telemetry, 0x0201)]
     [InlineData(ushort.MinValue, PacketFlags.NeedAck, MessageType.Telemetry, 0x0201)]
     [InlineData(0x1234, PacketFlags.NeedAck, MessageType.Telemetry, 0)]
@@ -72,9 +73,9 @@ public class PacketHeaderTests
 
     [Theory]
     [InlineData(0, 100)]
-    [InlineData(Constants.HeaderSize - 1, 100)]
+    [InlineData(HeaderConstants.HeaderSize - 1, 100)]
     [InlineData(2048, ushort.MaxValue)]
-    [InlineData(2048, Constants.MaxPayloadSize + 1)]
+    [InlineData(2048, HeaderConstants.MaxPayloadSize + 1)]
     [InlineData(0, ushort.MaxValue)]
     public void Bad_PacketHeaderSerialization_ReturnFalse(ushort bufferSize, ushort payloadLength)
     {
