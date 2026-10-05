@@ -1,19 +1,19 @@
 using System.Diagnostics.CodeAnalysis;
+using DeliveryService.Protocol.Constants;
+using DeliveryService.Protocol.Enums;
 
 namespace DeliveryService.Protocol.Messages;
 
+[Message(MessageType.Drive, Flags = PacketFlags.None)]
 public sealed class DriveMessage : IMessage
 {
-    private const int PayloadSize = 2;
-    private const sbyte MaxDrivePercent = 100;
-    
-    public sbyte Speed { get; set; }
-    public sbyte Rotate { get; set; }
+    public sbyte Speed { get; init; }
+    public sbyte Rotate { get; init; }
     
     public static bool TryParse(ReadOnlySpan<byte> payload, [NotNullWhen(true)] out DriveMessage? message)
     {
         message = null;
-        if (payload.Length != PayloadSize)
+        if (payload.Length != MessagesConstants.DrivePayloadSize)
         {
             return false;
         }
@@ -39,20 +39,21 @@ public sealed class DriveMessage : IMessage
     {
         written = 0;
         
-        if (buffer.Length < PayloadSize || !IsValid(Speed, Rotate))
+        if (buffer.Length < MessagesConstants.DrivePayloadSize || !IsValid(Speed, Rotate))
         {
             return false;
         }
 
         buffer[0] = (byte)Speed;
         buffer[1] = (byte)Rotate;
-        written = PayloadSize;
+        written = MessagesConstants.DrivePayloadSize;
         
         return true;
     }
 
     private static bool IsValid(sbyte speed, sbyte rotate)
     {
-        return (speed is >= -MaxDrivePercent and <= MaxDrivePercent) && (rotate is >= -MaxDrivePercent and <= MaxDrivePercent);
+        return speed is >= -MessagesConstants.DriveMaxValue and <= MessagesConstants.DriveMaxValue 
+               && rotate is >= -MessagesConstants.DriveMaxValue and <= MessagesConstants.DriveMaxValue;
     }
 }
