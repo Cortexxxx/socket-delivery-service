@@ -1,15 +1,4 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=37582fff_002Db580_002D4bae_002D88a8_002Db719e547acc8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Good_PacketHeader_SerializesCorrectly" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;Or&gt;&#xD;
-    &lt;TestAncestor&gt;&#xD;
-      &lt;TestId&gt;xUnit::28236276-433F-42EF-8D71-D842150D9D83::net10.0::DeliveryService.Tests.PacketHeaderTests.Good_PacketHeader_SerializesCorrectly&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::28236276-433F-42EF-8D71-D842150D9D83::net10.0::DeliveryService.Tests.PacketHeaderTests.Good_PacketHeader_SerializesAndParsesCorrectly&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::28236276-433F-42EF-8D71-D842150D9D83::net10.0::DeliveryService.Tests.PacketHeaderTests.Bad_PacketHeaderSerialization_ReturnFalse&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::28236276-433F-42EF-8D71-D842150D9D83::net10.0::DeliveryService.Tests.PacketHeaderTests.Bad_PacketHeaderParseWithWrongMagic_ReturnFalse&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::28236276-433F-42EF-8D71-D842150D9D83::net10.0::DeliveryService.Tests.PacketHeaderTests.Bad_PacketHeaderParseWithLargeContent_ReturnFalse&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::28236276-433F-42EF-8D71-D842150D9D83::net10.0::DeliveryService.Tests.DriveMessageTests.Good_DriveMessageParse_ParsesAndReturnTrue&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::28236276-433F-42EF-8D71-D842150D9D83::net10.0::DeliveryService.Tests.AckMessageTests.Good_AckMessageRoundTrip_ParsesSerializesAndReturnTrue&lt;/TestId&gt;&#xD;
-    &lt;/TestAncestor&gt;&#xD;
-    &lt;ProjectFile&gt;28236276-433F-42EF-8D71-D842150D9D83/f:DriveMessageTests.cs&lt;/ProjectFile&gt;&#xD;
-  &lt;/Or&gt;&#xD;
+  &lt;Project Location="C:\Users\Admin\Documents\Study\socket-delivery-service\Solution1\DeliveryService.Tests" Presentation="&amp;lt;DeliveryService.Tests&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

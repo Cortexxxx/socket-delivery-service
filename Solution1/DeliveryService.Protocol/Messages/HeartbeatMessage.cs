@@ -4,7 +4,7 @@ using DeliveryService.Protocol.Enums;
 namespace DeliveryService.Protocol.Messages;
 
 [Message(MessageType.Heartbeat, Flags = PacketFlags.None )]
-public class HeartbeatMessage : IMessage
+public sealed class HeartbeatMessage : IMessage
 {
     public static bool TryParse(ReadOnlySpan<byte> payload, [NotNullWhen(true)] out HeartbeatMessage? message)
     {

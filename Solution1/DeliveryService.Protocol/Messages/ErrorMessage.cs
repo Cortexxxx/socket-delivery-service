@@ -5,7 +5,7 @@ using DeliveryService.Protocol.Enums;
 namespace DeliveryService.Protocol.Messages;
 
 [Message(MessageType.Error, Flags = PacketFlags.None )]
-public class ErrorMessage : IMessage
+public sealed class ErrorMessage : IMessage
 {
     public ErrorCode ErrorCode { get; init; }
     

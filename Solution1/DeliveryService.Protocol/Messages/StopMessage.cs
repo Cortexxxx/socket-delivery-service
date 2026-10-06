@@ -4,7 +4,7 @@ using DeliveryService.Protocol.Enums;
 namespace DeliveryService.Protocol.Messages;
 
 [Message(MessageType.Stop, Flags = PacketFlags.NeedAck )]
-public class StopMessage : IMessage
+public sealed class StopMessage : IMessage
 {
     public static bool TryParse(ReadOnlySpan<byte> payload, [NotNullWhen(true)] out StopMessage? message)
     {

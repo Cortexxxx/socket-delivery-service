@@ -5,7 +5,7 @@ using DeliveryService.Protocol.Enums;
 namespace DeliveryService.Protocol.Messages;
 
 [Message(MessageType.Hello, Flags = PacketFlags.NeedAck )]
-public class HelloMessage : IMessage
+public sealed class HelloMessage : IMessage
 {
     public Role Role { get; init; }
     

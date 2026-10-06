@@ -6,7 +6,7 @@ using DeliveryService.Protocol.Enums;
 namespace DeliveryService.Protocol.Messages;
 
 [Message(MessageType.Ack, Flags = PacketFlags.None )]
-public class AckMessage : IMessage
+public sealed class AckMessage : IMessage
 {
     public ushort Seq { get; init; }
     
