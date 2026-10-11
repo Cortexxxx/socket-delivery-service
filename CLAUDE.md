@@ -27,7 +27,7 @@ All commands run from `Solution1/` (or pass `Solution1/DeliveryService.sln` expl
 dotnet build                                           # build everything
 dotnet test                                             # run all tests
 dotnet test --filter "FullyQualifiedName~DriveMessage"  # run one test class
-dotnet test --filter "DisplayName~Good_DrivePayloadSerialize"  # run one test method
+dotnet test --filter "DisplayName~TrySerialize_ValidMessage_ReturnsTrueAndExpectedBytes"  # run one test method
 ```
 
 Target framework is `net10.0`, `LangVersion` 12, nullable enabled.
