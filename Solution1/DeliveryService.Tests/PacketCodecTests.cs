@@ -139,10 +139,10 @@ public class PacketCodecTests
 
         // Act
 
-        var result = _codec.TryParsePacket(packetBytes, out var packet, out _);
+        var result = _codec.TryParsePacket(packetBytes, out var packet, out var errorCode);
 
         // Assert
-
+        Assert.NotNull(errorCode);
         Assert.False(result);
         Assert.Null(packet);
     }

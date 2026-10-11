@@ -16,11 +16,6 @@ public class PacketCodec
     {
         errorCode = null;
         packet = null;
-
-        if (packetBytes.Length < HeaderConstants.HeaderSize || packetBytes.Length > HeaderConstants.MaxPacketSize)
-        {
-            return false;
-        }
         
         var tryParseHeader = PacketHeader.TryParse(packetBytes, out var packetHeader);
         var tryParsePayload = _registry.TryParsePayload(packetHeader.MessageType,
