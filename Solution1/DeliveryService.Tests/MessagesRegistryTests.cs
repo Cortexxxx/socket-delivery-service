@@ -4,19 +4,6 @@ using DeliveryService.Protocol.Messages;
 
 namespace DeliveryService.Tests;
 
-public class UnknownMessage : IMessage
-{
-    public static bool TryParse(ReadOnlySpan<byte> payload, out IMessage? message)
-    {
-        throw new NotImplementedException();
-    }
-    
-    public bool TrySerialize(Span<byte> buffer, out int written)
-    {
-        throw new NotImplementedException();
-    }
-}
-
 public class MessagesRegistryTests
 {
     private readonly MessagesRegistry _registry = new(typeof(DriveMessage).Assembly);
