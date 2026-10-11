@@ -18,6 +18,12 @@ public class PacketCodec
         packet = null;
         
         var tryParseHeader = PacketHeader.TryParse(packetBytes, out var packetHeader);
+        
+        if (!tryParseHeader)
+        {
+            return false;
+        }
+        
         var tryParsePayload = _registry.TryParsePayload(packetHeader.MessageType,
             packetBytes[HeaderConstants.HeaderSize..], 
             out var message, out errorCode);
