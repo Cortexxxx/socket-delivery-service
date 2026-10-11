@@ -8,13 +8,25 @@ var assembly = Assembly.GetAssembly(typeof(DriveMessage));
 var registry = new MessagesRegistry(assembly);
 var packetCodec = new PacketCodec(registry);
 var udpTransport = new UdpTransport(0, packetCodec);
-
+var endpoint = new IPEndPoint(IPAddress.Loopback, 9000);
 udpTransport.Start();
+ushort seq = 0;
+var rand = new Random();
+udpTransport.TrySend(++seq, endpoint, new HelloMessage()
+{
+    Role = Role.Robot
+});
 
-var trySendResult = udpTransport.TrySend(0, new IPEndPoint(IPAddress.Loopback, 9000)
-    , new HelloMessage()
+while (true)
+{
+    udpTransport.TrySend(++seq, endpoint, new TelemetryMessage
     {
-        Role = Role.Robot
+        Position = new Point<float>
+        {
+            X = rand.Next() % 255,
+            Y = rand.Next() % 255
+        }
     });
-Console.WriteLine(trySendResult);
+    Thread.Sleep(500);
+}
 Console.ReadLine();

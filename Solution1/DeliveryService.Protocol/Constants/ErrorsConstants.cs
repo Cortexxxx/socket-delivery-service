@@ -16,4 +16,12 @@ public static class ErrorsConstants
         "TryParse method must be static";
     public const string DuplicateMessageType =
         "Two or more messages with the same key exist";
+    public const string StaticHandler =
+        "Handler method must be an instance method";
+    public const string NonVoidHandlerReturnType =
+        "Handler method must return void";
+    public const string IncorrectHandlerParameters =
+        "Handler method must have IPEndPoint, T parameters where T : class, IMessage";
+    public const string MissingMessageAttribute =
+        "Handler message type must have the Message attribute";
 }

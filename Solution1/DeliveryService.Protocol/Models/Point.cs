@@ -18,4 +18,9 @@ public struct Point<T> where T : INumber<T>
 
     public static Point<T> operator *(T scalar, Point<T> point) =>
         point * scalar;
+    
+    public override string ToString()
+    {
+        return $"({X}, {Y})";
+    }
 }

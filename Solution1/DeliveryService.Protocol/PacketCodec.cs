@@ -83,5 +83,4 @@ public class PacketCodec
         written = HeaderConstants.HeaderSize + payloadWritten;
         return true;
     }
-    
 }

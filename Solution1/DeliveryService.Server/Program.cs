@@ -1,11 +1,13 @@
 ﻿using System.Reflection;
 using DeliveryService.Protocol;
 using DeliveryService.Protocol.Messages;
+using DeliveryService.Server;
 
 var assembly = Assembly.GetAssembly(typeof(DriveMessage));
 var registry = new MessagesRegistry(assembly);
 var packetCodec = new PacketCodec(registry);
 var udpTransport = new UdpTransport(9000, packetCodec);
+var messagesDispatcher = new MessagesDispatcher(new ServerHandlers());
 
 udpTransport.Start();
 
@@ -18,6 +20,6 @@ while (true)
         Thread.Sleep(10);
         continue;
     }
-    
-    Console.WriteLine(receivedPacket.Packet.PacketHeader.MessageType + " " + receivedPacket.Sender);
+
+    messagesDispatcher.Dispatch(receivedPacket);
 }
