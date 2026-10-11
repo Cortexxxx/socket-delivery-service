@@ -12,9 +12,29 @@ public class PacketCodec
         _registry = registry;
     }
 
-    public bool TryParsePacket()
+    public bool TryParsePacket(ReadOnlySpan<byte> packetBytes, out Packet? packet, out ErrorCode? errorCode)
     {
-        return false;
+        errorCode = null;
+        packet = null;
+
+        if (packetBytes.Length < HeaderConstants.HeaderSize || packetBytes.Length > HeaderConstants.MaxPacketSize)
+        {
+            return false;
+        }
+        
+        var tryParseHeader = PacketHeader.TryParse(packetBytes, out var packetHeader);
+        var tryParsePayload = _registry.TryParsePayload(packetHeader.MessageType,
+            packetBytes[HeaderConstants.HeaderSize..], 
+            out var message, out errorCode);
+
+        if (!tryParseHeader || !tryParsePayload || message == null)
+        {
+            return false;
+        }
+        
+        packet = new Packet(packetHeader, message);
+        
+        return true;
     }
     
     /// <summary>
@@ -62,4 +82,5 @@ public class PacketCodec
         written = HeaderConstants.HeaderSize + payloadWritten;
         return true;
     }
+    
 }
