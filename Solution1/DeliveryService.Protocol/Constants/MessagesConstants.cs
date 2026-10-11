@@ -33,7 +33,8 @@ public static class MessagesConstants
     
     public const int TelemetryPayloadSize = 12; 
     public const int TelemetryYPositionOffset = 4; 
-    public const int TelemetryAngleOffset = 8; 
-    
+    public const int TelemetryAngleOffset = 8;
+
     // Map
+    public const int MapMaxSize = 9504;
 }
