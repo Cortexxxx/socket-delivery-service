@@ -21,7 +21,7 @@ public class TelemetryMessageTests
         new byte[] { 0x00, 0x00, 0x00, 0x40 },
         new byte[] { 0x00, 0x00, 0x80, 0xBF },
         0.5f, 2f, -1f)]
-    public void Good_TelemetryMessageRoundTrip_ParsesSerializesAndReturnTrue(
+    public void TrySerializeAndTryParse_RoundTripValidTelemetry_ReturnsSameMessage(
         byte[] xBytes, byte[] yBytes, byte[] angleBytes,
         float expectedX, float expectedY, float expectedAngle)
     {
@@ -57,7 +57,7 @@ public class TelemetryMessageTests
     [InlineData(0)]
     [InlineData(11)]
     [InlineData(13)]
-    public void Bad_ParseInvalidPayloadLength_ReturnFalse(int payloadLength)
+    public void TryParse_InvalidPayloadLength_ReturnsFalse(int payloadLength)
     {
         // Arrange
 
@@ -75,7 +75,7 @@ public class TelemetryMessageTests
     [Theory]
     [InlineData(0)]
     [InlineData(11)]
-    public void Bad_SerializeSmallBufferLength_ReturnFalse(int bufferLength)
+    public void TrySerialize_BufferTooSmall_ReturnsFalse(int bufferLength)
     {
         // Arrange
 
@@ -101,7 +101,7 @@ public class TelemetryMessageTests
     [InlineData(new byte[] { 0x00, 0x00, 0xC0, 0xFF }, new byte[] { 0x00, 0x00, 0x00, 0x00 }, new byte[] { 0x00, 0x00, 0x00, 0x00 })] // X = NaN
     [InlineData(new byte[] { 0x00, 0x00, 0x00, 0x00 }, new byte[] { 0x00, 0x00, 0x80, 0x7F }, new byte[] { 0x00, 0x00, 0x00, 0x00 })] // Y = +Infinity
     [InlineData(new byte[] { 0x00, 0x00, 0x00, 0x00 }, new byte[] { 0x00, 0x00, 0x00, 0x00 }, new byte[] { 0x00, 0x00, 0x80, 0xFF })] // Angle = -Infinity
-    public void Bad_ParseNonFiniteValue_ReturnFalse(byte[] xBytes, byte[] yBytes, byte[] angleBytes)
+    public void TryParse_NonFiniteValue_ReturnsFalse(byte[] xBytes, byte[] yBytes, byte[] angleBytes)
     {
         // Arrange
 
@@ -123,7 +123,7 @@ public class TelemetryMessageTests
     [InlineData(float.NaN, 0f, 0f)]
     [InlineData(0f, float.PositiveInfinity, 0f)]
     [InlineData(0f, 0f, float.NegativeInfinity)]
-    public void Bad_SerializeNonFiniteValue_ReturnFalse(float x, float y, float angle)
+    public void TrySerialize_NonFiniteValue_ReturnsFalse(float x, float y, float angle)
     {
         // Arrange
 

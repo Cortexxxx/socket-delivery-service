@@ -10,7 +10,7 @@ public class DriveMessageTests
     [InlineData(0x00, 0x64, 0, 100)]
     [InlineData(0x9C, 0x01, -100, 1)]
     [InlineData(0x00, 0x9C, 0, -100)]
-    public void Good_DriveMessageParse_ParsesAndReturnTrue(byte speed, byte rotate, sbyte expectedSpeed, sbyte expectedRotate)
+    public void TryParse_ValidPayload_ReturnsTrueAndExpectedValues(byte speed, byte rotate, sbyte expectedSpeed, sbyte expectedRotate)
     {
         // Arrange
 
@@ -32,7 +32,7 @@ public class DriveMessageTests
     [InlineData(0x01, 0x65)]
     [InlineData(0x9B, 0x01)]
     [InlineData(0x01, 0x9B)]
-    public void Bad_DriveMessageParse_ReturnFalse(byte speed, byte rotate)
+    public void TryParse_OutOfRangeValues_ReturnsFalse(byte speed, byte rotate)
     {
         // Arrange
 
@@ -48,7 +48,7 @@ public class DriveMessageTests
     }
 
     [Fact]
-    public void Bad_DriveMessageParseWithIncorrectPayloadLength_ReturnFalse()
+    public void TryParse_IncorrectPayloadLength_ReturnsFalse()
     {
         // Arrange
 
@@ -64,7 +64,7 @@ public class DriveMessageTests
     }
 
     [Fact]
-    public void Good_DrivePayloadSerialize_SerializeCorrectlyAndReturnTrue()
+    public void TrySerialize_ValidMessage_ReturnsTrueAndExpectedBytes()
     {
         // Arrange
         

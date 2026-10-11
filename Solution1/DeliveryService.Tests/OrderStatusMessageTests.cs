@@ -10,7 +10,7 @@ public class OrderStatusMessageTests
     [InlineData(0x01, 0x00, 0x00, 0x00, 0x00, OrderStatus.Pending, (ushort)0x0000)]
     [InlineData(0x04, 0xFF, 0xFF, 0xFF, 0xFF, OrderStatus.Delivered, (ushort)0xFFFF)]
     [InlineData(0x03, 0x34, 0x12, 0x05, 0xAB, OrderStatus.InTransit, (ushort)0x1234)]
-    public void Good_OrderStatusMessageRoundTrip_ParsesSerializesAndReturnTrue(
+    public void TrySerializeAndTryParse_RoundTripValidOrderStatus_ReturnsSameMessage(
         byte status, byte orderIdLow, byte orderIdHigh, byte x, byte y,
         OrderStatus expectedStatus, ushort expectedOrderId)
     {
@@ -45,7 +45,7 @@ public class OrderStatusMessageTests
     [InlineData(0)]
     [InlineData(4)]
     [InlineData(6)]
-    public void Bad_ParseInvalidPayloadLength_ReturnFalse(int payloadLength)
+    public void TryParse_InvalidPayloadLength_ReturnsFalse(int payloadLength)
     {
         // Arrange
 
@@ -63,7 +63,7 @@ public class OrderStatusMessageTests
     [Theory]
     [InlineData(0x00)]
     [InlineData(0x05)]
-    public void Bad_ParseUndefinedStatus_ReturnFalse(byte status)
+    public void TryParse_UndefinedStatus_ReturnsFalse(byte status)
     {
         // Arrange
 
@@ -81,7 +81,7 @@ public class OrderStatusMessageTests
     [Theory]
     [InlineData(0)]
     [InlineData(4)]
-    public void Bad_SerializeSmallBufferLength_ReturnFalse(int bufferLength)
+    public void TrySerialize_BufferTooSmall_ReturnsFalse(int bufferLength)
     {
         // Arrange
 
@@ -105,7 +105,7 @@ public class OrderStatusMessageTests
     }
 
     [Fact]
-    public void Bad_SerializeUndefinedStatus_ReturnFalse()
+    public void TrySerialize_UndefinedStatus_ReturnsFalse()
     {
         // Arrange
 

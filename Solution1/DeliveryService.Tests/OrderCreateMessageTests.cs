@@ -8,7 +8,7 @@ public class OrderCreateMessageTests
     [InlineData(0x00, 0x00)]
     [InlineData(0xFF, 0xFF)]
     [InlineData(0x05, 0xAB)]
-    public void Good_OrderCreateMessageRoundTrip_ParsesSerializesAndReturnTrue(byte x, byte y)
+    public void TrySerializeAndTryParse_RoundTripValidCoordinates_ReturnsSameMessage(byte x, byte y)
     {
         // Arrange
 
@@ -36,7 +36,7 @@ public class OrderCreateMessageTests
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(3)]
-    public void Bad_PayloadLength_ReturnFalse(int payloadLength)
+    public void TryParse_InvalidPayloadLength_ReturnsFalse(int payloadLength)
     {
         // Arrange
 
@@ -54,7 +54,7 @@ public class OrderCreateMessageTests
     [Theory]
     [InlineData(0)]
     [InlineData(1)]
-    public void Bad_SmallBufferLength_ReturnFalse(int bufferLength)
+    public void TrySerialize_BufferTooSmall_ReturnsFalse(int bufferLength)
     {
         // Arrange
 

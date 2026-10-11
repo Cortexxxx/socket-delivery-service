@@ -29,7 +29,7 @@ public class PacketHeaderTests
     }
 
     [Fact]
-    public void Good_PacketHeader_SerializesCorrectly()
+    public void TrySerialize_ValidHeader_WritesExpectedBytes()
     {   
         // Arrange
         
@@ -53,7 +53,7 @@ public class PacketHeaderTests
     [InlineData(ushort.MinValue, PacketFlags.NeedAck, MessageType.Telemetry, 0x0201)]
     [InlineData(0x1234, PacketFlags.NeedAck, MessageType.Telemetry, 0)]
     [InlineData(0x1234, PacketFlags.None, MessageType.Telemetry, 0x0201)]
-    public void Good_PacketHeader_SerializesAndParsesCorrectly(ushort seq, PacketFlags flags, MessageType messageType, ushort payloadLength)
+    public void TrySerializeAndTryParse_RoundTripValidHeader_ReturnsSameHeader(ushort seq, PacketFlags flags, MessageType messageType, ushort payloadLength)
     {
         // Arrange
         
@@ -77,7 +77,7 @@ public class PacketHeaderTests
     [InlineData(2048, ushort.MaxValue)]
     [InlineData(2048, HeaderConstants.MaxPayloadSize + 1)]
     [InlineData(0, ushort.MaxValue)]
-    public void Bad_PacketHeaderSerialization_ReturnFalse(ushort bufferSize, ushort payloadLength)
+    public void TrySerialize_InvalidBufferOrPayloadLength_ReturnsFalse(ushort bufferSize, ushort payloadLength)
     {
         // Arrange
         
@@ -95,7 +95,7 @@ public class PacketHeaderTests
 
 
     [Fact]
-    public void Bad_PacketHeaderParseWithWrongMagic_ReturnFalse()
+    public void TryParse_WrongMagic_ReturnsFalse()
     {
         // Arrange
         
@@ -117,7 +117,7 @@ public class PacketHeaderTests
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(7)]
-    public void Bad_PacketHeaderParseWithSmallLength_ReturnFalse(ushort bufferLength)
+    public void TryParse_BufferShorterThanHeader_ReturnsFalse(ushort bufferLength)
     {
         // Arrange
         
@@ -134,7 +134,7 @@ public class PacketHeaderTests
     }
     
     [Fact]
-    public void Bad_PacketHeaderParseWithLengthBiggerThanContent_ReturnFalse()
+    public void TryParse_LengthBiggerThanContent_ReturnsFalse()
     {
         // Arrange
         var header = GetTestHeader();
@@ -149,7 +149,7 @@ public class PacketHeaderTests
     }
 
     [Fact]
-    public void Bad_PacketHeaderParseWithLengthSmallerThanContent_ReturnFalse()
+    public void TryParse_LengthSmallerThanContent_ReturnsFalse()
     {
         // Arrange
         var header = GetTestHeader();

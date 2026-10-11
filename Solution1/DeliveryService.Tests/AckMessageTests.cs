@@ -5,7 +5,7 @@ namespace DeliveryService.Tests;
 public class AckMessageTests
 {
     [Fact]
-    public void Good_AckMessageRoundTrip_ParsesSerializesAndReturnTrue()
+    public void TrySerializeAndTryParse_RoundTripValidAck_ReturnsSameMessage()
     {
         // Arrange
 
@@ -37,7 +37,7 @@ public class AckMessageTests
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(3)]
-    public void Bad_PayloadLength_ReturnFalse(int payloadLength)
+    public void TryParse_InvalidPayloadLength_ReturnsFalse(int payloadLength)
     {
         // Arrange
 

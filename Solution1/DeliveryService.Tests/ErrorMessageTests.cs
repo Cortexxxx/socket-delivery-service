@@ -13,7 +13,7 @@ public class ErrorMessageTests
     [InlineData(ErrorCode.Forbidden)]
     [InlineData(ErrorCode.InvalidPoint)]
     [InlineData(ErrorCode.RobotOffline)]
-    public void Good_ErrorMessageRoundTrip_ParsesSerializesAndReturnTrue(ErrorCode errorCode)
+    public void TrySerializeAndTryParse_RoundTripAnyErrorCode_ReturnsSameMessage(ErrorCode errorCode)
     {
         // Arrange
 
@@ -42,7 +42,7 @@ public class ErrorMessageTests
     [Theory]
     [InlineData(0)]
     [InlineData(2)]
-    public void Bad_PayloadLength_ReturnFalse(int payloadLength)
+    public void TryParse_InvalidPayloadLength_ReturnsFalse(int payloadLength)
     {
         // Arrange
 
@@ -60,7 +60,7 @@ public class ErrorMessageTests
     [Theory]
     [InlineData(0x00)]
     [InlineData(0x08)]
-    public void Bad_UndefinedErrorCode_ReturnFalse(byte errorCode)
+    public void TryParse_UndefinedErrorCode_ReturnsFalse(byte errorCode)
     {
         // Arrange
 

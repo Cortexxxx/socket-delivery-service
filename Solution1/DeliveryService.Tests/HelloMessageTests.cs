@@ -9,7 +9,7 @@
         [InlineData(Role.Operator)]
         [InlineData(Role.Customer)]
         [InlineData(Role.Robot)]
-        public void Good_HelloMessageRoundTrip_ParsesSerializesAndReturnTrue(Role role)
+        public void TrySerializeAndTryParse_RoundTripAnyRole_ReturnsSameMessage(Role role)
         {
             // Arrange
 
@@ -38,7 +38,7 @@
         [Theory]
         [InlineData(0)]
         [InlineData(2)]
-        public void Bad_PayloadLength_ReturnFalse(int payloadLength)
+        public void TryParse_InvalidPayloadLength_ReturnsFalse(int payloadLength)
         {
             // Arrange
 
@@ -56,7 +56,7 @@
         [Theory]
         [InlineData(0x00)]
         [InlineData(0x04)]
-        public void Bad_UndefinedRole_ReturnFalse(byte role)
+        public void TryParse_UndefinedRole_ReturnsFalse(byte role)
         {
             // Arrange
 
