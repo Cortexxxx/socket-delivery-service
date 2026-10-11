@@ -1,0 +1,135 @@
+using System.Net;
+using System.Net.Sockets;
+using System.Threading.Channels;
+using DeliveryService.Protocol.Constants;
+
+namespace DeliveryService.Protocol;
+
+/// <summary>
+/// Owns the UDP socket and the receive thread. Parsed packets go to the receive queue,
+/// outgoing messages are serialized and sent from the caller's thread.
+/// </summary>
+public sealed class UdpTransport : IDisposable
+{
+    private readonly Socket _socket;
+    private readonly Channel<ReceivedPacket> _receiveQueue;
+    private readonly PacketCodec _packetCodec;
+    private Task _receiveLoopTask = Task.CompletedTask;
+    private CancellationTokenSource _receiveLoopCts = new();
+    private readonly byte[] _sendBuffer = new byte[HeaderConstants.MaxPacketSize];
+    
+    public UdpTransport(int port, PacketCodec packetCodec)
+    {
+        _packetCodec = packetCodec;
+        _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        _socket.Bind(new IPEndPoint(IPAddress.Any, port));
+        
+        // Windows reports an ICMP "port unreachable" (after sending to a closed port) as a
+        // SocketException 10054 on the next receive. Disable it so one dead peer can't break receive loop.
+        _socket.IOControl(-1744830452, new byte[] { 0, 0, 0, 0 }, null);
+        _receiveQueue = Channel.CreateUnbounded<ReceivedPacket>();
+    }
+
+    /// <summary>
+    /// Starts receive loop task.
+    /// </summary>
+    public void Start()
+    {
+        _receiveLoopCts = new CancellationTokenSource();
+        _receiveLoopTask = Task.Run(() => ReceiveLoopAsync(_receiveLoopCts.Token));
+    }
+
+    /// <summary>
+    /// Stops receive loop and closes the socket.
+    /// </summary>
+    public void Stop()
+    {
+        _receiveLoopCts.Cancel();
+        _receiveQueue.Writer.Complete();
+        _receiveLoopTask.Wait();
+        _socket.Close();
+    }
+
+    /// <summary>
+    /// Serializes the message to a packet and sends it to the address.
+    /// </summary>
+    /// <returns>Whether the packet was serialized and sent</returns>
+    public bool TrySend(ushort seq, IPEndPoint address, IMessage message)
+    {
+        var trySerializePacket = _packetCodec.TrySerializePacket(_sendBuffer, seq, message, out var written);
+        if (!trySerializePacket)
+        {
+            return false;
+        }
+
+        try
+        {
+            _socket.SendTo(_sendBuffer.AsSpan(0, written), address);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
+        
+        return true;
+    }
+
+    public bool TryReceive(out ReceivedPacket packet)
+    {
+        var receiveResult = _receiveQueue.Reader.TryRead(out packet);
+        return receiveResult;
+    }
+
+    /// <summary>
+    /// Receive body, parse the packet, write it to the queue.
+    /// </summary>
+    private async Task ReceiveLoopAsync(CancellationToken token)
+    {
+        var buffer = new byte[ProtocolConstants.BufferSize];
+        
+        while (!token.IsCancellationRequested)
+        {
+            try
+            {
+                EndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
+                var receiveResult = await _socket.ReceiveFromAsync(buffer, endPoint, token);
+
+                var tryParseResult = _packetCodec.TryParsePacket(
+                    buffer.AsSpan(0, receiveResult.ReceivedBytes),
+                    out var packet, out var errorCode);
+
+                if (!tryParseResult)
+                {
+                    if (errorCode != null)
+                    {
+                        // Inform that error
+                    }
+
+                    continue;
+                }
+
+                _receiveQueue.Writer.TryWrite(new ReceivedPacket((IPEndPoint)receiveResult.RemoteEndPoint, packet!));
+            }
+            catch (SocketException e) when (e.SocketErrorCode == (SocketError)10040)
+            {
+                Console.WriteLine(e);
+                continue;
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                break;
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        Stop();
+    }
+}
