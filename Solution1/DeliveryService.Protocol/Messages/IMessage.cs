@@ -1,4 +1,4 @@
-namespace DeliveryService.Protocol;
+namespace DeliveryService.Protocol.Interfaces;
 
 public interface IMessage
 {

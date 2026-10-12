@@ -1,5 +1,6 @@
 using System.Net;
 using DeliveryService.Protocol;
+using DeliveryService.Protocol.Attributes;
 using DeliveryService.Protocol.Messages;
 
 namespace DeliveryService.Server;

@@ -2,6 +2,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Channels;
 using DeliveryService.Protocol.Constants;
+using DeliveryService.Protocol.Interfaces;
+using DeliveryService.Protocol.Logger;
 
 namespace DeliveryService.Protocol;
 
@@ -17,16 +19,18 @@ public sealed class UdpTransport : IDisposable
     private Task _receiveLoopTask = Task.CompletedTask;
     private CancellationTokenSource _receiveLoopCts = new();
     private readonly byte[] _sendBuffer = new byte[HeaderConstants.MaxPacketSize];
+    private readonly IPacketLogger _logger;
     
-    public UdpTransport(int port, PacketCodec packetCodec)
+    public UdpTransport(int port, PacketCodec packetCodec, IPacketLogger logger)
     {
         _packetCodec = packetCodec;
+        _logger = logger;
         _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         _socket.Bind(new IPEndPoint(IPAddress.Any, port));
         
         // Windows reports an ICMP "port unreachable" (after sending to a closed port) as a
         // SocketException 10054 on the next receive. Disable it so one dead peer can't break receive loop.
-        _socket.IOControl(-1744830452, new byte[] { 0, 0, 0, 0 }, null);
+        _socket.IOControl(-1744830452, [0, 0, 0, 0], null);
         _receiveQueue = Channel.CreateUnbounded<ReceivedPacket>();
     }
 
@@ -45,7 +49,7 @@ public sealed class UdpTransport : IDisposable
     public void Stop()
     {
         _receiveLoopCts.Cancel();
-        _receiveQueue.Writer.Complete();
+        _receiveQueue.Writer.TryComplete();
         _receiveLoopTask.Wait();
         _socket.Close();
     }
@@ -65,6 +69,7 @@ public sealed class UdpTransport : IDisposable
         try
         {
             _socket.SendTo(_sendBuffer.AsSpan(0, written), address);
+            _logger.LogSend(address, _sendBuffer.AsSpan(0, written));
         }
         catch (Exception e)
         {
@@ -94,6 +99,8 @@ public sealed class UdpTransport : IDisposable
             {
                 EndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
                 var receiveResult = await _socket.ReceiveFromAsync(buffer, endPoint, token);
+                _logger.LogReceive((IPEndPoint)receiveResult.RemoteEndPoint, 
+                    buffer.AsSpan(0, receiveResult.ReceivedBytes));
 
                 var tryParseResult = _packetCodec.TryParsePacket(
                     buffer.AsSpan(0, receiveResult.ReceivedBytes),
@@ -111,7 +118,7 @@ public sealed class UdpTransport : IDisposable
 
                 _receiveQueue.Writer.TryWrite(new ReceivedPacket((IPEndPoint)receiveResult.RemoteEndPoint, packet!));
             }
-            catch (SocketException e) when (e.SocketErrorCode == (SocketError)10040)
+            catch (SocketException e) when (e.SocketErrorCode == SocketError.MessageSize)
             {
                 Console.WriteLine(e);
                 continue;

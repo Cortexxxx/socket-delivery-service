@@ -1,3 +1,5 @@
+using DeliveryService.Protocol.Interfaces;
+
 namespace DeliveryService.Protocol;
 
 public class Packet
