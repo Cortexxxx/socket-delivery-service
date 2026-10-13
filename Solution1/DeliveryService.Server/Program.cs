@@ -5,30 +5,36 @@ using DeliveryService.Protocol.Map;
 using DeliveryService.Protocol.Messages;
 using DeliveryService.Server;
 
-var assembly = Assembly.GetAssembly(typeof(DriveMessage));
-var registry = new MessagesRegistry(assembly!);
-var packetCodec = new PacketCodec(registry);
-var udpTransport = new UdpTransport(9000, packetCodec, new HexLogger(LoggerFilters.None));
-var messagesDispatcher = new MessagesDispatcher(new ServerHandlers());
+var udpTransport = new UdpTransport(ServerConfig.ServerPort, 
+    new PacketCodec(new MessagesRegistry(Assembly.GetAssembly(typeof(DriveMessage)))),
+    new HexLogger(LoggerFilters.None));
+
+var serverSender = new ServerSender(udpTransport);
+var serverSessions = new ServerSessions();
+
+var mapper = new FileMap(ServerConfig.MapPath, ServerConfig.MapObstacleChar, ServerConfig.MapStorageChar);
+var tryLoadMap = mapper.TryLoad(out var map, out var storagePoint);
+var tryGetBitmask = MapMessage.TryGetBitmaskFromBoolMatrix(map, out var bitmaskMap);
+
+if (!tryLoadMap || !tryGetBitmask || map == null || bitmaskMap == null || storagePoint == null)
+{
+    Console.WriteLine("Map was not loaded properly!");
+    return;
+}
+
+var mapMessage = new MapMessage
+{
+    Width = (byte)map.GetLength(1),
+    Height = (byte)map.GetLength(0),
+    Bitmask = bitmaskMap,
+    StoragePoint = (Point<byte>)storagePoint
+};
+
+var messagesDispatcher = new MessagesDispatcher(new ServerHandlers(serverSessions, serverSender, mapMessage));
+
+
+
+var serverApp = new ServerApp(udpTransport, serverSender, serverSessions, messagesDispatcher, map);
 
 udpTransport.Start();
-var mapper = new FileMap("map.txt", '#', '*');
-var tryLoadMap = mapper.TryLoad(out var map, out var storagePoint);
-
-if (tryLoadMap)
-{
-    // Send map
-}
-
-while (true)
-{
-    var tryReceiveResult = udpTransport.TryReceive(out var receivedPacket);
-    
-    if (!tryReceiveResult)
-    {
-        Thread.Sleep(10);
-        continue;
-    }
-
-    messagesDispatcher.Dispatch(receivedPacket);
-}
+serverApp.Run();

@@ -24,7 +24,7 @@ public sealed class MessagesRegistry
     /// Initializes messages registry. Fills the messages dictionary once when the application starts.
     /// Uses reflection to find all messages with the attribute.
     /// </summary>
-    public MessagesRegistry(Assembly assembly)
+    public MessagesRegistry(Assembly? assembly)
     {
         _messageParses = new Dictionary<MessageType, ParseFunc>();
         _messageInfos = new Dictionary<Type, (MessageType messageType, PacketFlags flags)>();

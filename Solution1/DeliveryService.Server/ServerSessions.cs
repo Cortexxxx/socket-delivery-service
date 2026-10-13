@@ -10,11 +10,13 @@ public class ServerSessions
     public IPEndPoint? Operator { get; private set; }
     private readonly Dictionary<IPEndPoint, Session> _sessions = new();
 
-    public bool TrySetRobot(IPEndPoint endPoint)
+    public bool TrySetSingleton(IPEndPoint endPoint, Role role)
     {
-        if (Robot != null)
+        var session = role == Role.Operator ? Operator : Robot;
+        
+        if (session != null)
         {   
-            return Robot.Equals(endPoint);
+            return session.Equals(endPoint);
         }
 
         if (_sessions.ContainsKey(endPoint))
@@ -22,26 +24,16 @@ public class ServerSessions
             return false;
         }
 
-
-        Robot = endPoint;
-        _sessions[endPoint] = new Session(endPoint, Role.Robot);
-        return true;
-    }
-    
-    public bool TrySetOperator(IPEndPoint endPoint)
-    {
-        if (Operator != null)
+        if (role == Role.Operator)
         {
-            return Operator.Equals(endPoint);
+            Operator = endPoint;
+        }
+        else
+        {
+            Robot = endPoint;
         }
         
-        if (_sessions.ContainsKey(endPoint))
-        {
-            return false;
-        }
-        
-        Operator = endPoint;
-        _sessions[endPoint] = new Session(endPoint, Role.Operator);
+        _sessions[endPoint] = new Session(endPoint, role);
         return true;
     }
 
@@ -106,6 +98,7 @@ public class ServerSessions
                 Operator = null;
                 break;
             case Role.Robot:
+                Console.WriteLine($"Robot {Robot!.Address} has disconnected");
                 Robot = null;
                 break;
             case Role.Customer:
