@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DeliveryService.Protocol\DeliveryService.Protocol.csproj" />
+      <ProjectReference Include="..\DeliveryService.Robot\DeliveryService.Robot.csproj" />
     </ItemGroup>
 
 </Project>

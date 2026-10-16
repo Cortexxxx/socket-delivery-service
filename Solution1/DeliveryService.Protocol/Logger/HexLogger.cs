@@ -6,7 +6,14 @@ namespace DeliveryService.Protocol.Logger;
 public class HexLogger : IPacketLogger
 {
     private readonly LoggerFilters _filters;
-
+    private readonly Dictionary<MessageType, ConsoleColor> messageColors = new()
+    {
+        [MessageType.Error] = ConsoleColor.Red,
+        [MessageType.Hello] = ConsoleColor.DarkCyan,
+        [MessageType.Ack] = ConsoleColor.Yellow,
+        [MessageType.Heartbeat] = ConsoleColor.Magenta,
+    };
+    
     public HexLogger(LoggerFilters filters = LoggerFilters.All)
     {
         _filters = filters;
@@ -46,10 +53,15 @@ public class HexLogger : IPacketLogger
             return;
         }
 
+        if (messageColors.TryGetValue(header.MessageType, out var color))
+        {
+            Console.ForegroundColor = color;
+        }
         Console.WriteLine($"{prefix}\n{packet}\n" +
                           $"Seq={header.Seq}, " +
                           $"Flags={header.Flags}, " +
                           $"MessageType={header.MessageType}, " +
                           $"PayloadLength={header.PayloadLength}");
+        Console.ForegroundColor = ConsoleColor.White;
     }
 }

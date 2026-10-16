@@ -3,6 +3,7 @@ using DeliveryService.Protocol.Attributes;
 using DeliveryService.Protocol.Constants;
 using DeliveryService.Protocol.Enums;
 using DeliveryService.Protocol.Interfaces;
+using DeliveryService.Protocol.Models;
 
 namespace DeliveryService.Protocol.Messages;
 
@@ -97,7 +98,7 @@ public sealed class MapMessage : IMessage
         return true;
     }
 
-    public bool[,]? GetBoolMatrixFromBitmask()
+    public bool[,] GetBoolMatrixFromBitmask()
     {
         var result = new bool[Width, Height];
 

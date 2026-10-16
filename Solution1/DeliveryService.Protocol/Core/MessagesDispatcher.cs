@@ -4,6 +4,7 @@ using DeliveryService.Protocol.Attributes;
 using DeliveryService.Protocol.Constants;
 using DeliveryService.Protocol.Enums;
 using DeliveryService.Protocol.Interfaces;
+using DeliveryService.Protocol.Models;
 
 namespace DeliveryService.Protocol;
 
@@ -17,12 +18,6 @@ public class MessagesDispatcher
 {
     private readonly Dictionary<MessageType, HandleFunc> _messagesHandlers = new();
     
-    /// <summary>
-    /// Finds all public instance handlers declared in the handlers object's class,
-    /// validates them and registers by message type.
-    /// Uses reflection once on application start.
-    /// </summary>
-    /// <param name="handlersObject">Object whose methods will handle the messages</param>
     public MessagesDispatcher(object handlersObject)
     {
         var handlers = handlersObject.GetType()
@@ -67,13 +62,7 @@ public class MessagesDispatcher
         
         return true;
     }
-
-    /// <summary>
-    /// Throws an exception with a message if the handler is static,
-    /// does not return void, does not take (IPEndPoint, T) parameters where T is a class message,
-    /// or if T does not have the Message attribute.
-    /// </summary>
-    /// <param name="handler">Handler method</param>
+    
     private static void CheckHandlerMethod(MethodInfo handler)
     {
         if (handler.IsStatic)

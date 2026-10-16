@@ -4,6 +4,7 @@ using System.Threading.Channels;
 using DeliveryService.Protocol.Constants;
 using DeliveryService.Protocol.Interfaces;
 using DeliveryService.Protocol.Logger;
+using DeliveryService.Protocol.Models;
 
 namespace DeliveryService.Protocol;
 
@@ -19,9 +20,9 @@ public sealed class UdpTransport : IDisposable
     private Task _receiveLoopTask = Task.CompletedTask;
     private CancellationTokenSource _receiveLoopCts = new();
     private readonly byte[] _sendBuffer = new byte[HeaderConstants.MaxPacketSize];
-    private readonly IPacketLogger _logger;
+    private readonly IPacketLogger? _logger;
     
-    public UdpTransport(int port, PacketCodec packetCodec, IPacketLogger logger)
+    public UdpTransport(int port, PacketCodec packetCodec, IPacketLogger? logger)
     {
         _packetCodec = packetCodec;
         _logger = logger;
@@ -69,7 +70,10 @@ public sealed class UdpTransport : IDisposable
         try
         {
             _socket.SendTo(_sendBuffer.AsSpan(0, written), address);
-            _logger.LogSend(address, _sendBuffer.AsSpan(0, written));
+            if (_logger != null)
+            {
+                _logger.LogSend(address, _sendBuffer.AsSpan(0, written));
+            }
         }
         catch (Exception e)
         {
@@ -99,8 +103,12 @@ public sealed class UdpTransport : IDisposable
             {
                 EndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
                 var receiveResult = await _socket.ReceiveFromAsync(buffer, endPoint, token);
-                _logger.LogReceive((IPEndPoint)receiveResult.RemoteEndPoint, 
-                    buffer.AsSpan(0, receiveResult.ReceivedBytes));
+
+                if (_logger != null)
+                {
+                    _logger.LogReceive((IPEndPoint)receiveResult.RemoteEndPoint, 
+                        buffer.AsSpan(0, receiveResult.ReceivedBytes));
+                }
 
                 var tryParseResult = _packetCodec.TryParsePacket(
                     buffer.AsSpan(0, receiveResult.ReceivedBytes),

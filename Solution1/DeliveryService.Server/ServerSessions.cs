@@ -9,7 +9,7 @@ public class ServerSessions
     public IPEndPoint? Robot { get; private set; }
     public IPEndPoint? Operator { get; private set; }
     private readonly Dictionary<IPEndPoint, Session> _sessions = new();
-
+    
     public bool TrySetSingleton(IPEndPoint endPoint, Role role)
     {
         var session = role == Role.Operator ? Operator : Robot;
@@ -55,6 +55,11 @@ public class ServerSessions
     {
         return _sessions.TryGetValue(endPoint, out session);
     }
+
+    public List<Session> GetAllSessions()
+    {
+        return _sessions.Values.ToList();
+    }
     
     public void UpdateSessionsAliveStatus()
     {
@@ -95,6 +100,7 @@ public class ServerSessions
         switch (session.Role)
         {
             case Role.Operator:
+                Console.WriteLine($"Operator {Operator!.Address} has disconnected");
                 Operator = null;
                 break;
             case Role.Robot:

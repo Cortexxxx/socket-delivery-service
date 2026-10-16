@@ -1,6 +1,6 @@
 using DeliveryService.Protocol.Interfaces;
 
-namespace DeliveryService.Protocol;
+namespace DeliveryService.Protocol.Models;
 
 public class Packet
 {
@@ -12,5 +12,4 @@ public class Packet
 
     public PacketHeader PacketHeader { get; init; }
     public IMessage Message { get; init; }
-
 }

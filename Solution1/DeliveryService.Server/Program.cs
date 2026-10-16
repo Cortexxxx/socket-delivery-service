@@ -1,17 +1,10 @@
-﻿using System.Reflection;
-using DeliveryService.Protocol;
-using DeliveryService.Protocol.Logger;
+﻿using DeliveryService.Protocol;
 using DeliveryService.Protocol.Map;
 using DeliveryService.Protocol.Messages;
 using DeliveryService.Server;
 
-var udpTransport = new UdpTransport(ServerConfig.ServerPort, 
-    new PacketCodec(new MessagesRegistry(Assembly.GetAssembly(typeof(DriveMessage)))),
-    new HexLogger(LoggerFilters.None));
-
-var serverSender = new ServerSender(udpTransport);
 var serverSessions = new ServerSessions();
-
+var ordersService = new OrdersService();
 var mapper = new FileMap(ServerConfig.MapPath, ServerConfig.MapObstacleChar, ServerConfig.MapStorageChar);
 var tryLoadMap = mapper.TryLoad(out var map, out var storagePoint);
 var tryGetBitmask = MapMessage.TryGetBitmaskFromBoolMatrix(map, out var bitmaskMap);
@@ -22,19 +15,11 @@ if (!tryLoadMap || !tryGetBitmask || map == null || bitmaskMap == null || storag
     return;
 }
 
-var mapMessage = new MapMessage
-{
-    Width = (byte)map.GetLength(1),
-    Height = (byte)map.GetLength(0),
-    Bitmask = bitmaskMap,
-    StoragePoint = (Point<byte>)storagePoint
-};
+var mapState = new MapState(map, bitmaskMap, storagePoint);
 
-var messagesDispatcher = new MessagesDispatcher(new ServerHandlers(serverSessions, serverSender, mapMessage));
+var node = NetworkNodeFactory.Create(NetworkConfig.ServerPort,
+    sender => new ServerHandlers(serverSessions, sender, mapState, ordersService));
+var serverApp = new ServerApp(node.Transport, node.Sender, serverSessions, node.ReceiveProcessor);
 
-
-
-var serverApp = new ServerApp(udpTransport, serverSender, serverSessions, messagesDispatcher, map);
-
-udpTransport.Start();
+node.Transport.Start();
 serverApp.Run();

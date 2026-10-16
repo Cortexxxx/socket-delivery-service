@@ -1,6 +1,7 @@
 using DeliveryService.Protocol.Constants;
 using DeliveryService.Protocol.Enums;
 using DeliveryService.Protocol.Interfaces;
+using DeliveryService.Protocol.Models;
 
 namespace DeliveryService.Protocol;
 

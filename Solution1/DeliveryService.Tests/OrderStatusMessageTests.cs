@@ -1,6 +1,7 @@
 using DeliveryService.Protocol;
 using DeliveryService.Protocol.Enums;
 using DeliveryService.Protocol.Messages;
+using DeliveryService.Protocol.Models;
 
 namespace DeliveryService.Tests;
 

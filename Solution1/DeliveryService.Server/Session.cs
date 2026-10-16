@@ -3,16 +3,9 @@ using DeliveryService.Protocol.Enums;
 
 namespace DeliveryService.Server;
 
-public class Session
+public class Session(IPEndPoint ipEndPoint, Role role)
 {
-    public Session(IPEndPoint ipEndPoint, Role role)
-    {
-        IpEndPoint = ipEndPoint;
-        Role = role;
-        LastAliveTime = DateTime.UtcNow;
-    }
-
-    public IPEndPoint IpEndPoint { get; init; }
-    public Role Role { get; init; }
-    public DateTime LastAliveTime { get; set; }
+    public IPEndPoint IpEndPoint { get; init; } = ipEndPoint;
+    public Role Role { get; init; } = role;
+    public DateTime LastAliveTime { get; set; } = DateTime.UtcNow;
 }

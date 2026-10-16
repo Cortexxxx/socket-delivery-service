@@ -1,3 +1,5 @@
+using DeliveryService.Protocol.Models;
+
 namespace DeliveryService.Protocol.Map;
 
 public interface IMap
