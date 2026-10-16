@@ -42,17 +42,18 @@ public class ServerHandlers(ServerSessions serverSessions,
     
     [MessageHandler]
     public void OnTelemetry(IPEndPoint sender, TelemetryMessage message)
-    {
+    {        
+        SendTelemetryToOperator(message);
 
         if (ordersService.CurrentOrder == null) return;
         
         var currentOrder = ordersService.CurrentOrder;
             
-        SendTelemetry(message, currentOrder);
+        SendTelemetryToCustomer(message, currentOrder);
         
         if (ordersService.TryChangeStatus(message.Position, mapState.StoragePoint))
         {
-            SendActualStatus();
+            SendCurrentOrderStatus();
         }
     }
 
@@ -87,8 +88,9 @@ public class ServerHandlers(ServerSessions serverSessions,
         
         if (mapState.CanMove(Point<float>.ByteToCentralFloatPoint(point)))
         {
-            ordersService.CreateOrder(sender, point);
-            SendActualStatus();
+            var order = ordersService.CreateOrder(sender, point);
+            SendOrder(order, sender);
+            SendOrder(order, serverSessions.Operator);
         }
         else
         {
@@ -105,15 +107,17 @@ public class ServerHandlers(ServerSessions serverSessions,
         Console.WriteLine($"Error: {message.ErrorCode}");
     }
     
-    private void SendTelemetry(TelemetryMessage message, Order currentOrder)
+    private void SendTelemetryToOperator(TelemetryMessage message)
     {
         if (serverSessions.Operator != null) serverSender.SendTo(serverSessions.Operator, message);
-
+    }
+    private void SendTelemetryToCustomer(TelemetryMessage message, Order currentOrder)
+    {
         if (currentOrder.OrderStatus is OrderStatus.PickingUp or OrderStatus.InTransit)
             serverSender.SendTo(currentOrder.Customer, message);
     }
 
-    private void SendActualStatus()
+    private void SendCurrentOrderStatus()
     {
         if (ordersService.CurrentOrder == null) return;
         SendOrder(ordersService.CurrentOrder, ordersService.CurrentOrder.Customer);
