@@ -3,21 +3,15 @@ using DeliveryService.Protocol.Enums;
 
 namespace DeliveryService.Protocol.Logger;
 
-public class HexLogger : IPacketLogger
+public class HexLogger(LoggerFilters filters = LoggerFilters.All) : IPacketLogger
 {
-    private readonly LoggerFilters _filters;
-    private readonly Dictionary<MessageType, ConsoleColor> messageColors = new()
+    private readonly Dictionary<MessageType, ConsoleColor> _messageColors = new()
     {
         [MessageType.Error] = ConsoleColor.Red,
         [MessageType.Hello] = ConsoleColor.DarkCyan,
         [MessageType.Ack] = ConsoleColor.Yellow,
         [MessageType.Heartbeat] = ConsoleColor.Magenta,
     };
-    
-    public HexLogger(LoggerFilters filters = LoggerFilters.All)
-    {
-        _filters = filters;
-    }
 
     public void LogReceive(IPEndPoint sender, ReadOnlySpan<byte> packetBytes)
         => WriteLog("RECEIVE FROM", sender, packetBytes);
@@ -27,13 +21,12 @@ public class HexLogger : IPacketLogger
 
     private bool ShouldLog(bool headerParsed, MessageType messageType)
     {
-        if (!headerParsed)
-            return _filters.HasFlag(LoggerFilters.ShowErrors);
+        if (!headerParsed) return filters.HasFlag(LoggerFilters.ShowErrors);
 
         return messageType switch
         {
-            MessageType.Telemetry => _filters.HasFlag(LoggerFilters.ShowTelemetry),
-            MessageType.Error => _filters.HasFlag(LoggerFilters.ShowErrors),
+            MessageType.Telemetry => filters.HasFlag(LoggerFilters.ShowTelemetry),
+            MessageType.Error => filters.HasFlag(LoggerFilters.ShowErrors),
             _ => true
         };
     }
@@ -41,8 +34,8 @@ public class HexLogger : IPacketLogger
     private void WriteLog(string direction, IPEndPoint endPoint, ReadOnlySpan<byte> packetBytes)
     {
         var parsed = PacketHeader.TryParse(packetBytes, out var header);
-        if (!ShouldLog(parsed, header.MessageType))
-            return;
+        
+        if (!ShouldLog(parsed, header.MessageType)) return;
 
         var prefix = $"{DateTime.UtcNow} {direction} ({endPoint}): ";
         var packet = $"Packet: [{Convert.ToHexString(packetBytes)}]";
@@ -53,10 +46,9 @@ public class HexLogger : IPacketLogger
             return;
         }
 
-        if (messageColors.TryGetValue(header.MessageType, out var color))
-        {
+        if (_messageColors.TryGetValue(header.MessageType, out var color)) 
             Console.ForegroundColor = color;
-        }
+        
         Console.WriteLine($"{prefix}\n{packet}\n" +
                           $"Seq={header.Seq}, " +
                           $"Flags={header.Flags}, " +

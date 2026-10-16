@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Net;
 using DeliveryService.Protocol.Attributes;
 using DeliveryService.Protocol.Core;
@@ -18,12 +17,13 @@ public class ServerHandlers(ServerSessions serverSessions,
     public void OnHello(IPEndPoint sender, HelloMessage message)
     {
         Console.WriteLine($"Yahoo! Hello my little {sender}");
+        
         var trySetResult = message.Role switch
         {
             Role.Operator => serverSessions.TrySetSingleton(sender, Role.Operator),
             Role.Customer => serverSessions.TrySetCustomer(sender),
             Role.Robot => serverSessions.TrySetSingleton(sender, Role.Robot),
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException(nameof(message.Role))
         };
 
         if (!trySetResult)
@@ -36,148 +36,66 @@ public class ServerHandlers(ServerSessions serverSessions,
         else
         {
             serverSender.SendTo(sender, mapState.MapMessagePrefab);
-            
             SendAllOrders(message.Role, sender);
         }
     }
-
-    private void SendAllOrders(Role role,  IPEndPoint? customerEndpoint = null)
-    {
-        var receiver = customerEndpoint ?? serverSessions.Operator;
-        KeyValuePair<ushort, Order>[]? orders = null;
-        orders = role == Role.Operator ? ordersService.Orders.ToArray() : ordersService.GetOrdersByIpEndpoint(receiver);
-
-        if (orders == null) return;
-        
-        foreach (var order in orders)
-        {
-            if (receiver != null)
-            {
-                SendOrder(order.Value, receiver);
-            }
-        }
-    }
-
-    private void SendOrder(Order order, IPEndPoint? receiver)
-    {
-        Console.WriteLine($"Sending order status to {receiver}: {order.Id} with status {order.OrderStatus}");
-        if (receiver == null) return;
-        serverSender.SendTo(receiver, new OrderStatusMessage
-        {
-            Status = order.OrderStatus,
-            OrderId = order.Id,
-            Endpoint = order.DeliveryPoint
-        });
-    }
-
+    
     [MessageHandler]
     public void OnTelemetry(IPEndPoint sender, TelemetryMessage message)
     {
-        foreach (var session in serverSessions.GetAllSessions()
-                     .Where(session => session.Role == Role.Operator))
-        {
-            serverSender.SendTo(session.IpEndPoint, message);
-        }
 
-        if (ordersService.CurrentOrder != null)
+        if (ordersService.CurrentOrder == null) return;
+        
+        var currentOrder = ordersService.CurrentOrder;
+            
+        SendTelemetry(message, currentOrder);
+        
+        if (ordersService.TryChangeStatus(message.Position, mapState.StoragePoint))
         {
-            var currentOrder = ordersService.CurrentOrder;
-            
-            if (currentOrder.OrderStatus is OrderStatus.PickingUp or OrderStatus.InTransit)
-            {
-                serverSender.SendTo(currentOrder.Customer, message);
-            }
-            
-            var wasStatusChanged = false;
-            
-            switch (currentOrder.OrderStatus)
-            {
-                case OrderStatus.Pending:
-                    ordersService.AdvanceCurrentOrder();
-                    wasStatusChanged = true;
-                    break;
-                case OrderStatus.PickingUp:
-                    if (Point<float>.Distance(message.Position, 
-                            Point<float>.ByteToCentralFloatPoint(mapState.StoragePoint)) <= 0.5)
-                    {
-                        ordersService.AdvanceCurrentOrder();
-                        wasStatusChanged = true;
-                    }
-                    break;
-                case OrderStatus.InTransit:
-                    if (ordersService.CurrentOrder != null && Point<float>.Distance(message.Position, 
-                            Point<float>.ByteToCentralFloatPoint(ordersService.CurrentOrder.DeliveryPoint)) <= 0.5)
-                    {
-                        ordersService.AdvanceCurrentOrder();
-                        wasStatusChanged = true;
-                    }
-                    break;
-                case OrderStatus.Delivered:
-                    SendOrder(ordersService.CurrentOrder, ordersService.CurrentOrder.Customer);
-                    SendOrder(ordersService.CurrentOrder, serverSessions.Operator);
-                    
-                    ordersService.SetNewOrderInProcess();
-                    wasStatusChanged = true;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-            
-            if (wasStatusChanged && ordersService.CurrentOrder != null)
-            {
-                SendOrder(ordersService.CurrentOrder, ordersService.CurrentOrder.Customer);
-                SendOrder(ordersService.CurrentOrder, serverSessions.Operator);
-            }
+            SendActualStatus();
         }
     }
 
     [MessageHandler]
     public void OnDrive(IPEndPoint sender, DriveMessage message)
     {
-        if (serverSessions.TryGetSessionByAddress(sender, out var session) && session.Role == Role.Operator)
+        if (serverSessions.Operator == null || !serverSessions.Operator.Equals(sender)) return;
+        
+        if (serverSessions.Robot == null)
         {
-            if (serverSessions.Robot == null)
+            serverSender.SendTo(sender, new ErrorMessage
             {
-                serverSender.SendTo(sender, new ErrorMessage()
-                {
-                    ErrorCode = ErrorCode.RobotOffline
-                });
-            }
-            else
-            {
-                serverSender.SendTo(serverSessions.Robot, message);
-            }
+                ErrorCode = ErrorCode.RobotOffline
+            });
+        }
+        else
+        {
+            serverSender.SendTo(serverSessions.Robot, message);
         }
     }
 
     [MessageHandler]
-    public void OnHeartbeat(IPEndPoint sender, HeartbeatMessage message)
-    {
-        if (serverSessions.TryGetSessionByAddress(sender, out var session))
-        {
-            session.LastAliveTime = DateTime.UtcNow;
-        }
-    }
+    public void OnHeartbeat(IPEndPoint sender, HeartbeatMessage message) { }
 
     [MessageHandler]
     public void OnOrderCreate(IPEndPoint sender, OrderCreateMessage message)
     {
-        if (serverSessions.TryGetSessionByAddress(sender, out var session) && session.Role == Role.Customer)
+        if (!serverSessions.TryGetSessionByAddress(sender, out var session) 
+            || session.Role != Role.Customer) return;
+        
+        var point = new Point<byte>(message.X, message.Y);
+        
+        if (mapState.CanMove(Point<float>.ByteToCentralFloatPoint(point)))
         {
-            var point = new Point<byte>(message.X, message.Y);
-            if (mapState.CanMove(Point<float>.ByteToCentralFloatPoint(point)))
+            ordersService.CreateOrder(sender, point);
+            SendActualStatus();
+        }
+        else
+        {
+            serverSender.SendTo(sender, new ErrorMessage
             {
-                var order = ordersService.CreateOrder(sender, point);
-                SendOrder(order, sender);
-                SendOrder(order, serverSessions.Operator);
-            }
-            else
-            {
-                serverSender.SendTo(sender, new ErrorMessage()
-                {
-                    ErrorCode = ErrorCode.InvalidPoint
-                });
-            }
+                ErrorCode = ErrorCode.InvalidPoint
+            });
         }
     }
 
@@ -186,4 +104,47 @@ public class ServerHandlers(ServerSessions serverSessions,
     {
         Console.WriteLine($"Error: {message.ErrorCode}");
     }
+    
+    private void SendTelemetry(TelemetryMessage message, Order currentOrder)
+    {
+        if (serverSessions.Operator != null) serverSender.SendTo(serverSessions.Operator, message);
+
+        if (currentOrder.OrderStatus is OrderStatus.PickingUp or OrderStatus.InTransit)
+            serverSender.SendTo(currentOrder.Customer, message);
+    }
+
+    private void SendActualStatus()
+    {
+        if (ordersService.CurrentOrder == null) return;
+        SendOrder(ordersService.CurrentOrder, ordersService.CurrentOrder.Customer);
+        SendOrder(ordersService.CurrentOrder, serverSessions.Operator);
+    }
+    
+    private void SendOrder(Order order, IPEndPoint? receiver)
+    {
+        if (receiver == null) return;
+        
+        serverSender.SendTo(receiver, new OrderStatusMessage
+        {
+            Status = order.OrderStatus,
+            OrderId = order.Id,
+            Endpoint = order.DeliveryPoint
+        });
+    }
+    
+    private void SendAllOrders(Role role,  IPEndPoint? customerEndpoint = null)
+    {
+        var receiver = customerEndpoint ?? serverSessions.Operator;
+        
+        if (receiver == null) return;
+        
+        var orders = role == Role.Operator 
+            ? ordersService.Orders : ordersService.GetOrdersByIpEndpoint(receiver);
+
+        foreach (var order in orders)
+        {
+            if (receiver != null) SendOrder(order.Value, receiver);
+        }
+    }
+
 }

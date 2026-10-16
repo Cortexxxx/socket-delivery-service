@@ -5,6 +5,7 @@ public static class ServerConfig
     // Intervals
     
     public const int CheckTimeoutIntervalSeconds = 1;
+    public const int SessionTimeoutSeconds = 5;
     
     // Map
     

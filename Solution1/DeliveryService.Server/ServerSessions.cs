@@ -14,15 +14,9 @@ public class ServerSessions
     {
         var session = role == Role.Operator ? Operator : Robot;
         
-        if (session != null)
-        {   
-            return session.Equals(endPoint);
-        }
+        if (session != null) return session.Equals(endPoint);
 
-        if (_sessions.ContainsKey(endPoint))
-        {
-            return false;
-        }
+        if (_sessions.ContainsKey(endPoint)) return false;
 
         if (role == Role.Operator)
         {
@@ -39,39 +33,22 @@ public class ServerSessions
 
     public bool TrySetCustomer(IPEndPoint endPoint)
     {
-        var sessionExists = _sessions.TryGetValue(endPoint, out var session);
-
-        if (sessionExists)
-        {
-            return session!.Role == Role.Customer;
-        }
+        if (_sessions.TryGetValue(endPoint, out var session)) return session.Role == Role.Customer;
         
         _sessions[endPoint] = new Session(endPoint, Role.Customer);
         return true;
     }
 
     public bool TryGetSessionByAddress(IPEndPoint endPoint, 
-        [NotNullWhen(true)] out Session? session)
-    {
-        return _sessions.TryGetValue(endPoint, out session);
-    }
+        [NotNullWhen(true)] out Session? session) => _sessions.TryGetValue(endPoint, out session);
 
-    public List<Session> GetAllSessions()
-    {
-        return _sessions.Values.ToList();
-    }
+    public IEnumerable<Session> GetAllSessions() => _sessions.Values;
     
     public void UpdateSessionsAliveStatus()
     {
-        if (Robot != null)
-        {
-            UpdateSessionAliveStatus(Robot);
-        }
+        if (Robot != null) UpdateSessionAliveStatus(Robot);
 
-        if (Operator != null)
-        {
-            UpdateSessionAliveStatus(Operator);
-        }
+        if (Operator != null) UpdateSessionAliveStatus(Operator);
 
         foreach (var session in _sessions
                      .Where(session => session.Value.Role == Role.Customer))
@@ -82,20 +59,17 @@ public class ServerSessions
 
     private void UpdateSessionAliveStatus(IPEndPoint endPoint)
     {
-        var isIpAddressExists = _sessions.TryGetValue(endPoint, out var session);
         
-        if (!isIpAddressExists)
+        if (!_sessions.TryGetValue(endPoint, out var session))
         {
             Console.WriteLine("Ip address is not exists");
             return;
         }
         
-        var isSessionAlive = DateTime.UtcNow - session!.LastAliveTime < TimeSpan.FromSeconds(5);
+        var isSessionAlive = DateTime.UtcNow - session.LastAliveTime 
+                             < TimeSpan.FromSeconds(ServerConfig.SessionTimeoutSeconds);
 
-        if (isSessionAlive)
-        {
-            return;
-        }
+        if (isSessionAlive) return;
         
         switch (session.Role)
         {

@@ -5,19 +5,18 @@ using DeliveryService.Protocol.Enums;
 
 namespace DeliveryService.Protocol.Messages;
 
-[Message(MessageType.OrderCreate, Flags = PacketFlags.NeedAck )]
+[Message(MessageType.OrderCreate, Flags = PacketFlags.NeedAck)]
 public sealed class OrderCreateMessage : IMessage
 {
     public byte X { get; init; }
     public byte Y { get; init; }
     
-    public static bool TryParse(ReadOnlySpan<byte> payload, [NotNullWhen(true)] out OrderCreateMessage? message)
+    public static bool TryParse(ReadOnlySpan<byte> payload, 
+        [NotNullWhen(true)] out OrderCreateMessage? message)
     {
-        if (payload.Length != MessagesConstants.OrderCreatePayloadSize)
-        {
-            message = null;
-            return false;
-        }
+        message = null;
+
+        if (payload.Length != MessagesConstants.OrderCreatePayloadSize) return false;
 
         var x = payload[0];
         var y = payload[1];
@@ -35,10 +34,7 @@ public sealed class OrderCreateMessage : IMessage
     {
         written = 0;
         
-        if (buffer.Length < MessagesConstants.OrderCreatePayloadSize)
-        {
-            return false;
-        }
+        if (buffer.Length < MessagesConstants.OrderCreatePayloadSize) return false;
 
         buffer[0] = X;
         buffer[1] = Y;

@@ -21,7 +21,8 @@ public class MessagesDispatcher
     public MessagesDispatcher(object handlersObject)
     {
         var handlers = handlersObject.GetType()
-            .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+            .GetMethods(BindingFlags.Public 
+                        | BindingFlags.Instance | BindingFlags.DeclaredOnly)
             .Where(m => m.GetCustomAttribute<MessageHandlerAttribute>() != null);
 
         foreach (var handler in handlers)
@@ -31,10 +32,8 @@ public class MessagesDispatcher
             var messageType = handler.GetParameters()[1].ParameterType;
             var messageEnumType = messageType.GetCustomAttribute<MessageAttribute>()!.MessageType;
             var handleFunc = CreateHandleFunc(handlersObject, messageType, handler);
-
-            var tryAdd = _messagesHandlers.TryAdd(messageEnumType, handleFunc);
-
-            if (!tryAdd)
+            
+            if (!_messagesHandlers.TryAdd(messageEnumType, handleFunc))
             {
                 throw new Exception(ErrorsConstants.DuplicateMessageType);
             }
@@ -43,12 +42,10 @@ public class MessagesDispatcher
 
     public bool Dispatch(ReceivedPacket packet)
     {
-        var handler = _messagesHandlers.GetValueOrDefault(packet.Packet.PacketHeader.MessageType);
+        var handler = _messagesHandlers.
+            GetValueOrDefault(packet.Packet.PacketHeader.MessageType);
         
-        if (handler == null)
-        {
-            return false;
-        }
+        if (handler == null) return false;
 
         try
         {
@@ -93,9 +90,11 @@ public class MessagesDispatcher
     }
 
     /// <summary>
-    /// Wraps a typed handler in a general HandleFunc delegate that casts the message to its concrete type.
+    /// Wraps a typed handler in a general HandleFunc delegate
+    /// that casts the message to its concrete type.
     /// </summary>
-    private static HandleFunc Wrap<TMessage>(TypedHandle<TMessage> typedHandle) where TMessage : class, IMessage
+    private static HandleFunc Wrap<TMessage>(TypedHandle<TMessage> typedHandle) 
+        where TMessage : class, IMessage
     {
         return (sender, message) =>
         {
@@ -104,13 +103,16 @@ public class MessagesDispatcher
     }
 
     /// <summary>
-    /// Builds a HandleFunc delegate bound to the handlers object for a handler method with a concrete message type.
+    /// Builds a HandleFunc delegate bound to the handlers object
+    /// for a handler method with a concrete message type.
     /// </summary>
-    private static HandleFunc CreateHandleFunc(object handlersObject, Type messageType, MethodInfo handlerInfo)
+    private static HandleFunc CreateHandleFunc(object handlersObject, 
+        Type messageType, MethodInfo handlerInfo)
     {
         var typedHandle = typeof(TypedHandle<>).MakeGenericType(messageType);
         var typedHandleDelegate = Delegate.CreateDelegate(typedHandle, handlersObject, handlerInfo);
-        var wrapMethod = typeof(MessagesDispatcher).GetMethod(nameof(Wrap), BindingFlags.NonPublic | BindingFlags.Static)!;
+        var wrapMethod = typeof(MessagesDispatcher).GetMethod(nameof(Wrap), 
+            BindingFlags.NonPublic | BindingFlags.Static)!;
         var wrapGenericMethod = wrapMethod.MakeGenericMethod(messageType);
         var handleFunc = wrapGenericMethod.Invoke(null, [typedHandleDelegate]);
         return (HandleFunc)handleFunc!;

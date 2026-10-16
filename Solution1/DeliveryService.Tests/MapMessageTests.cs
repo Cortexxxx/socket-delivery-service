@@ -19,7 +19,8 @@ public class MapMessageTests
         {
             Width = width,
             Height = height,
-            Bitmask = bitmask
+            Bitmask = bitmask,
+            StoragePoint = null!
         };
 
         // Act
@@ -198,7 +199,8 @@ public class MapMessageTests
         {
             Width = width,
             Height = height,
-            Bitmask = []
+            Bitmask = [],
+            StoragePoint = null!
         };
 
         var buffer = new byte[100];
@@ -224,7 +226,8 @@ public class MapMessageTests
         {
             Width = width,
             Height = height,
-            Bitmask = new byte[(width * height + 7) / 8]
+            Bitmask = new byte[(width * height + 7) / 8],
+            StoragePoint = null!
         };
 
         var buffer = new byte[10000];
@@ -279,7 +282,8 @@ public class MapMessageTests
         {
             Width = width,
             Height = height,
-            Bitmask = new byte[bitmaskLength]
+            Bitmask = new byte[bitmaskLength],
+            StoragePoint = null!
         };
 
         var buffer = new byte[100];
@@ -299,12 +303,16 @@ public class MapMessageTests
     {
         // Arrange
 
-        // 5x3: index = 5 * y + x, so [4,1] is bit 9 -> byte 1, bit 1 -> 0x02
         var message = new MapMessage
         {
             Width = 5,
             Height = 3,
-            Bitmask = new byte[] { 0x00, 0x02 }
+            Bitmask =
+            [
+                0x00,
+                0x02
+            ],
+            StoragePoint = null!
         };
 
         // Act

@@ -3,26 +3,16 @@ using DeliveryService.Protocol.Enums;
 
 namespace DeliveryService.Protocol.Models;
 
-public class Order
+public class Order(IPEndPoint customer, Point<byte> deliveryPoint, ushort id)
 {
-    public Order(IPEndPoint customer, Point<byte> deliveryPoint, ushort id)
-    {
-        Customer = customer;
-        Id = id;
-        DeliveryPoint = deliveryPoint;
-    }
-
-    public ushort Id { get; init; }
+    public ushort Id { get; } = id;
     public OrderStatus OrderStatus { get; private set; } = OrderStatus.Pending;
-    public IPEndPoint Customer { get; private init; }
-    public Point<byte> DeliveryPoint { get; private init; }
+    public IPEndPoint Customer { get; private init; } = customer;
+    public Point<byte> DeliveryPoint { get; private init; } = deliveryPoint;
 
     public void Advance()
     {
-        if (OrderStatus != OrderStatus.Delivered)
-        {
-            OrderStatus++;
-        }
+        if (OrderStatus != OrderStatus.Delivered) OrderStatus++;
     }
 
     public void SetStatus(OrderStatus status)

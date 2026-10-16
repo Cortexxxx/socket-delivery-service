@@ -3,27 +3,17 @@ using DeliveryService.Protocol.Models;
 
 namespace DeliveryService.Protocol.Map;
 
-public class FileMap : IMap
+public class FileMap(string path, char obstacleChar, char storageChar) : IMap
 {
-    private readonly string _path;
-    private readonly char _obstacleChar;
-    private readonly char _storageChar;
-
-    public FileMap(string path, char obstacleChar, char storageChar)
-    {
-        _path = path;
-        _obstacleChar = obstacleChar;
-        _storageChar = storageChar;
-    }
-    
     public bool TryLoad(out bool[,]? map, out Point<byte>? storagePoint)
     {
         map = null;
         storagePoint = null;
         string[] mapStrings;
+        
         try
         {
-            mapStrings = File.ReadAllLines(_path, Encoding.UTF8);
+            mapStrings = File.ReadAllLines(path, Encoding.UTF8);
         }
         catch (Exception e)
         {
@@ -31,10 +21,7 @@ public class FileMap : IMap
             return false;
         }
 
-        if (mapStrings.Length == 0)
-        {
-            return false;
-        }
+        if (mapStrings.Length == 0) return false;
 
         var height = mapStrings.Length;
         var width = mapStrings[0].Length;
@@ -44,17 +31,13 @@ public class FileMap : IMap
         {
             for (var x = 0; x < width; x++)
             {
-                if (mapStrings[y][x] == _obstacleChar)
+                if (mapStrings[y][x] == obstacleChar)
                 {
                     map[x,y] = true;
                 }
-                else if (mapStrings[y][x] == _storageChar)
+                else if (mapStrings[y][x] == storageChar)
                 {
-                    storagePoint = new Point<byte>()
-                    {
-                        X = (byte)x,
-                        Y = (byte)y
-                    };
+                    storagePoint = new Point<byte>((byte)x, (byte)y);
                 }
             }
         }

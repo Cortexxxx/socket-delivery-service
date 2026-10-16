@@ -10,29 +10,31 @@ namespace DeliveryService.Protocol.Messages;
 [Message(MessageType.Telemetry, Flags = PacketFlags.None)]
 public sealed class TelemetryMessage : IMessage
 {
-    public Point<float> Position { get; init; }
-    public float Angle { get; init; }
+    public required Point<float> Position { get; init; }
+    public required float Angle { get; init; }
     
-    public static bool TryParse(ReadOnlySpan<byte> payload, [NotNullWhen(true)] out TelemetryMessage? message)
+    public static bool TryParse(ReadOnlySpan<byte> payload, 
+        [NotNullWhen(true)] out TelemetryMessage? message)
     {
         message = null;
-        if (payload.Length != MessagesConstants.TelemetryPayloadSize)
-        {
-            return false;
-        }
+        
+        if (payload.Length != MessagesConstants.TelemetryPayloadSize) return false;
 
         var position = new Point<float>
         {
-            X = BinaryPrimitives.ReadSingleLittleEndian(payload[..MessagesConstants.TelemetryYPositionOffset]),
-            Y = BinaryPrimitives.ReadSingleLittleEndian(payload[MessagesConstants.TelemetryYPositionOffset..MessagesConstants.TelemetryAngleOffset])
+            X = BinaryPrimitives.ReadSingleLittleEndian(
+                payload[..MessagesConstants.TelemetryYPositionOffset]),
+            Y = BinaryPrimitives.ReadSingleLittleEndian(
+                payload[MessagesConstants.TelemetryYPositionOffset
+                    ..MessagesConstants.TelemetryAngleOffset])
         };
         
-        var angle = BinaryPrimitives.ReadSingleLittleEndian(payload[MessagesConstants.TelemetryAngleOffset..]);
+        var angle = BinaryPrimitives.ReadSingleLittleEndian(
+            payload[MessagesConstants.TelemetryAngleOffset..]);
 
-        if (!float.IsFinite(position.X) || !float.IsFinite(position.Y) || !float.IsFinite(angle))
-        {
-            return false;
-        }
+        if (!float.IsFinite(position.X) 
+            || !float.IsFinite(position.Y) 
+            || !float.IsFinite(angle)) return false;
         
         message = new TelemetryMessage
         {
@@ -47,19 +49,18 @@ public sealed class TelemetryMessage : IMessage
     {
         written = 0;
         
-        if (buffer.Length < MessagesConstants.TelemetryPayloadSize)
-        {
-            return false;
-        }
+        if (buffer.Length < MessagesConstants.TelemetryPayloadSize) return false;
         
-        if (!float.IsFinite(Position.X) || !float.IsFinite(Position.Y) || !float.IsFinite(Angle))
-        {
-            return false;
-        }
+        if (!float.IsFinite(Position.X) 
+            || !float.IsFinite(Position.Y) 
+            || !float.IsFinite(Angle)) return false;
         
-        BinaryPrimitives.WriteSingleLittleEndian(buffer[..MessagesConstants.TelemetryYPositionOffset], Position.X);
+        BinaryPrimitives.WriteSingleLittleEndian(
+            buffer[..MessagesConstants.TelemetryYPositionOffset], Position.X);
+        
         BinaryPrimitives.WriteSingleLittleEndian(buffer[MessagesConstants.TelemetryYPositionOffset
             ..MessagesConstants.TelemetryAngleOffset], Position.Y);
+        
         BinaryPrimitives.WriteSingleLittleEndian(buffer[MessagesConstants.TelemetryAngleOffset
             ..MessagesConstants.TelemetryPayloadSize], Angle);
         

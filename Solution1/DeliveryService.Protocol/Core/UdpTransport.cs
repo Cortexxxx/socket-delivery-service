@@ -8,10 +8,6 @@ using DeliveryService.Protocol.Models;
 
 namespace DeliveryService.Protocol.Core;
 
-/// <summary>
-/// Owns the UDP socket and the receive thread. Parsed packets go to the receive queue,
-/// outgoing messages are serialized and sent from the caller's thread.
-/// </summary>
 public sealed class UdpTransport : IDisposable
 {
     private readonly Socket _socket;
@@ -29,24 +25,16 @@ public sealed class UdpTransport : IDisposable
         _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         _socket.Bind(new IPEndPoint(IPAddress.Any, port));
         
-        // Windows reports an ICMP "port unreachable" (after sending to a closed port) as a
-        // SocketException 10054 on the next receive. Disable it so one dead peer can't break receive loop.
         _socket.IOControl(-1744830452, [0, 0, 0, 0], null);
         _receiveQueue = Channel.CreateUnbounded<ReceivedPacket>();
     }
-
-    /// <summary>
-    /// Starts receive loop task.
-    /// </summary>
+    
     public void Start()
     {
         _receiveLoopCts = new CancellationTokenSource();
         _receiveLoopTask = Task.Run(() => ReceiveLoopAsync(_receiveLoopCts.Token));
     }
 
-    /// <summary>
-    /// Stops receive loop and closes the socket.
-    /// </summary>
     public void Stop()
     {
         _receiveLoopCts.Cancel();
@@ -54,26 +42,18 @@ public sealed class UdpTransport : IDisposable
         _receiveLoopTask.Wait();
         _socket.Close();
     }
-
-    /// <summary>
-    /// Serializes the message to a packet and sends it to the address.
-    /// </summary>
-    /// <returns>Whether the packet was serialized and sent</returns>
+    
     public bool TrySend(ushort seq, IPEndPoint address, IMessage message)
     {
-        var trySerializePacket = _packetCodec.TrySerializePacket(_sendBuffer, seq, message, out var written);
-        if (!trySerializePacket)
-        {
-            return false;
-        }
+        var trySerializePacket = _packetCodec.TrySerializePacket(
+            _sendBuffer, seq, message, out var written);
+        
+        if (!trySerializePacket) return false;
 
         try
         {
             _socket.SendTo(_sendBuffer.AsSpan(0, written), address);
-            if (_logger != null)
-            {
-                _logger.LogSend(address, _sendBuffer.AsSpan(0, written));
-            }
+            _logger?.LogSend(address, _sendBuffer.AsSpan(0, written));
         }
         catch (Exception e)
         {
@@ -84,15 +64,13 @@ public sealed class UdpTransport : IDisposable
         return true;
     }
 
-    public bool TryReceive(out ReceivedPacket packet)
+    public bool TryReceive(out ReceivedPacket packet) => _receiveQueue.Reader.TryRead(out packet);
+    
+    public void Dispose()
     {
-        var receiveResult = _receiveQueue.Reader.TryRead(out packet);
-        return receiveResult;
+        Stop();
     }
-
-    /// <summary>
-    /// Receive body, parse the packet, write it to the queue.
-    /// </summary>
+    
     private async Task ReceiveLoopAsync(CancellationToken token)
     {
         var buffer = new byte[ProtocolConstants.BufferSize];
@@ -104,11 +82,8 @@ public sealed class UdpTransport : IDisposable
                 EndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
                 var receiveResult = await _socket.ReceiveFromAsync(buffer, endPoint, token);
 
-                if (_logger != null)
-                {
-                    _logger.LogReceive((IPEndPoint)receiveResult.RemoteEndPoint, 
-                        buffer.AsSpan(0, receiveResult.ReceivedBytes));
-                }
+                _logger?.LogReceive((IPEndPoint)receiveResult.RemoteEndPoint, 
+                    buffer.AsSpan(0, receiveResult.ReceivedBytes));
 
                 var tryParseResult = _packetCodec.TryParsePacket(
                     buffer.AsSpan(0, receiveResult.ReceivedBytes),
@@ -124,12 +99,12 @@ public sealed class UdpTransport : IDisposable
                     continue;
                 }
 
-                _receiveQueue.Writer.TryWrite(new ReceivedPacket((IPEndPoint)receiveResult.RemoteEndPoint, packet!));
+                _receiveQueue.Writer.TryWrite(
+                    new ReceivedPacket((IPEndPoint)receiveResult.RemoteEndPoint, packet!));
             }
             catch (SocketException e) when (e.SocketErrorCode == SocketError.MessageSize)
             {
                 Console.WriteLine(e);
-                continue;
             }
             catch (OperationCanceledException)
             {
@@ -141,10 +116,5 @@ public sealed class UdpTransport : IDisposable
                 break;
             }
         }
-    }
-
-    public void Dispose()
-    {
-        Stop();
     }
 }

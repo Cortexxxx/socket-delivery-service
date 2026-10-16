@@ -7,40 +7,34 @@ using DeliveryService.Protocol.Models;
 
 namespace DeliveryService.Protocol.Messages;
 
-[Message(MessageType.OrderStatus, Flags = PacketFlags.NeedAck )]
+[Message(MessageType.OrderStatus, Flags = PacketFlags.NeedAck)]
 public sealed class OrderStatusMessage : IMessage
 {
-    public OrderStatus Status { get; init; }
-    public ushort OrderId { get; init; }
-    public Point<byte> Endpoint { get; init; }
+    public required OrderStatus Status { get; init; }
+    public required ushort OrderId { get; init; }
+    public required Point<byte> Endpoint { get; init; }
     
-    public static bool TryParse(ReadOnlySpan<byte> payload, [NotNullWhen(true)] out OrderStatusMessage? message)
+    public static bool TryParse(ReadOnlySpan<byte> payload, 
+        [NotNullWhen(true)] out OrderStatusMessage? message)
     {
         message = null;
 
-        if (payload.Length != MessagesConstants.OrderStatusPayloadSize)
-        {
-            return false;
-        }
+        if (payload.Length != MessagesConstants.OrderStatusPayloadSize) return false;
 
         var orderStatus = (OrderStatus)payload[0];
 
-        if (!Enum.IsDefined(orderStatus))
-        {
-            return false;
-            
-        }
-
-
-        var orderId = BinaryPrimitives.ReadUInt16LittleEndian(payload[MessagesConstants.OrderStatusIdOffset..MessagesConstants.OrderStatusEndpointOffset]);
+        if (!Enum.IsDefined(orderStatus)) return false;
+        
+        var orderId = BinaryPrimitives.ReadUInt16LittleEndian(
+            payload[MessagesConstants.OrderStatusIdOffset..MessagesConstants.OrderStatusEndpointOffset]);
         var x = payload[MessagesConstants.OrderStatusEndpointOffset];
-        var y = payload[MessagesConstants.OrderStatusEndpointOffset+1];
+        var y = payload[MessagesConstants.OrderStatusEndpointOffset + 1];
             
         message = new OrderStatusMessage()
         {
             Status = orderStatus,
             OrderId = orderId,
-            Endpoint = new Point<byte>() {X = x, Y = y}
+            Endpoint = new Point<byte>(x, y)
         };
         
         return true;
@@ -50,18 +44,16 @@ public sealed class OrderStatusMessage : IMessage
     {
         written = 0;
         
-        if (buffer.Length < MessagesConstants.OrderStatusPayloadSize)
-        {
-            return false;
-        }
+        if (buffer.Length < MessagesConstants.OrderStatusPayloadSize) return false;
 
-        if (!Enum.IsDefined(Status))
-        {
-            return false;
-        }
+        if (!Enum.IsDefined(Status)) return false;
         
         buffer[0] = (byte)Status;
-        BinaryPrimitives.WriteUInt16LittleEndian(buffer[MessagesConstants.OrderStatusIdOffset..MessagesConstants.OrderStatusEndpointOffset], OrderId);
+        
+        BinaryPrimitives.WriteUInt16LittleEndian(
+            buffer[MessagesConstants.OrderStatusIdOffset..MessagesConstants.OrderStatusEndpointOffset], 
+            OrderId);
+        
         buffer[MessagesConstants.OrderStatusEndpointOffset] = Endpoint.X;
         buffer[MessagesConstants.OrderStatusEndpointOffset + 1] = Endpoint.Y;
         

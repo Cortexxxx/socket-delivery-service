@@ -11,21 +11,17 @@ public sealed class DriveMessage : IMessage
     public sbyte Speed { get; init; }
     public sbyte Rotate { get; init; }
     
-    public static bool TryParse(ReadOnlySpan<byte> payload, [NotNullWhen(true)] out DriveMessage? message)
+    public static bool TryParse(ReadOnlySpan<byte> payload, 
+        [NotNullWhen(true)] out DriveMessage? message)
     {
         message = null;
-        if (payload.Length != MessagesConstants.DrivePayloadSize)
-        {
-            return false;
-        }
+        
+        if (payload.Length != MessagesConstants.DrivePayloadSize) return false;
 
         var speed = (sbyte)payload[0];
         var rotate = (sbyte)payload[1];
 
-        if (!IsValid(speed, rotate))
-        {
-            return false;
-        }
+        if (!IsValid(speed, rotate)) return false;
         
         message = new DriveMessage
         {
@@ -40,10 +36,7 @@ public sealed class DriveMessage : IMessage
     {
         written = 0;
         
-        if (buffer.Length < MessagesConstants.DrivePayloadSize || !IsValid(Speed, Rotate))
-        {
-            return false;
-        }
+        if (buffer.Length < MessagesConstants.DrivePayloadSize || !IsValid(Speed, Rotate)) return false;
 
         buffer[0] = (byte)Speed;
         buffer[1] = (byte)Rotate;

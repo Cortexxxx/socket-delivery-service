@@ -9,10 +9,7 @@ public class Point<T> where T : INumber<T>
         X = x;
         Y = y;
     }
-    
     public Point() { }
-
-
     public T X { get; set; }
     public T Y { get; set; }
 
@@ -28,18 +25,14 @@ public class Point<T> where T : INumber<T>
     public static Point<T> operator *(T scalar, Point<T> point) =>
         point * scalar;
     
-    public override string ToString()
-    {
-        return $"({X}, {Y})";
-    }
+    public override string ToString() => $"({X}, {Y})";
 
     public static float Distance(Point<float> first, Point<float> second)
     {
-        return (float)Math.Sqrt((first.X - second.X) * (first.X - second.X) + (first.Y - second.Y) * ( first.Y - second.Y));
+        return (float)Math.Sqrt((first.X - second.X) * (first.X - second.X) 
+                                + (first.Y - second.Y) * ( first.Y - second.Y));
     }
 
-    public static Point<float> ByteToCentralFloatPoint(Point<byte> bytePoint)
-    {
-        return new Point<float>(bytePoint.X + 0.5f, bytePoint.Y + 0.5f);
-    }
+    public static Point<float> ByteToCentralFloatPoint(Point<byte> bytePoint) =>
+        new(bytePoint.X + 0.5f, bytePoint.Y + 0.5f);
 }

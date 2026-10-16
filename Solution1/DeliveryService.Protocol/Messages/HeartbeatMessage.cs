@@ -4,16 +4,15 @@ using DeliveryService.Protocol.Enums;
 
 namespace DeliveryService.Protocol.Messages;
 
-[Message(MessageType.Heartbeat, Flags = PacketFlags.None )]
+[Message(MessageType.Heartbeat, Flags = PacketFlags.None)]
 public sealed class HeartbeatMessage : IMessage
 {
-    public static bool TryParse(ReadOnlySpan<byte> payload, [NotNullWhen(true)] out HeartbeatMessage? message)
+    public static bool TryParse(ReadOnlySpan<byte> payload, 
+        [NotNullWhen(true)] out HeartbeatMessage? message)
     {
-        if (payload.Length != 0)
-        {
-            message = null;
-            return false;
-        }
+        message = null;
+        
+        if (payload.Length != 0) return false;
         
         message = new HeartbeatMessage();
         
@@ -23,6 +22,7 @@ public sealed class HeartbeatMessage : IMessage
     public bool TrySerialize(Span<byte> buffer, out int written)
     {
         written = 0;
+        
         return true;
     }
 }

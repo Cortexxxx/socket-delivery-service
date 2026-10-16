@@ -5,7 +5,7 @@ namespace DeliveryService.Server;
 
 public class Session(IPEndPoint ipEndPoint, Role role)
 {
-    public IPEndPoint IpEndPoint { get; init; } = ipEndPoint;
-    public Role Role { get; init; } = role;
+    public IPEndPoint IpEndPoint { get; } = ipEndPoint;
+    public Role Role { get; } = role;
     public DateTime LastAliveTime { get; set; } = DateTime.UtcNow;
 }

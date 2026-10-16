@@ -18,15 +18,21 @@ public class ClientApp(
     ReceiveProcessor receiveProcessor, ClientState state,
     IPEndPoint serverEndpoint) : AppLoop(udpTransport, receiveProcessor)
 {
-    private readonly IntervalTimer _helloTimer = new(TimeSpan.FromSeconds(NetworkConfig.HelloRetryIntervalSeconds));
-    private readonly IntervalTimer _heartbeatTimer = new(TimeSpan.FromSeconds(ClientConfig.HeartbeatIntervalSeconds));
-    private readonly IntervalTimer _driveTickTimer = new(TimeSpan.FromMilliseconds(ClientConfig.DriveTickIntervalMilliseconds));
-
+    private readonly IntervalTimer _helloTimer 
+        = new(TimeSpan.FromSeconds(NetworkConfig.HelloRetryIntervalSeconds));
+    private readonly IntervalTimer _heartbeatTimer 
+        = new(TimeSpan.FromSeconds(ClientConfig.HeartbeatIntervalSeconds));
+    private readonly IntervalTimer _driveTickTimer 
+        = new(TimeSpan.FromMilliseconds(ClientConfig.DriveTickIntervalMilliseconds));
+    private readonly IntervalTimer _renderTimer = 
+        new(TimeSpan.FromMilliseconds(ClientConfig.RenderIntervalMilliseconds));
+    
     private MoveDirection _moveDirection = MoveDirection.None;
     private RotateDirection _rotateDirection = RotateDirection.None;
-    private readonly IntervalTimer _renderTimer = new(TimeSpan.FromMilliseconds(ClientConfig.RenderIntervalMilliseconds));
+
     private readonly StringBuilder _customerInput = new();
     private readonly ConcurrentQueue<string?> _customerEntriesQueue = new();
+    
     protected override void OnStart()
     {
         Console.Clear();
@@ -43,10 +49,7 @@ public class ClientApp(
             switch (state.Role)
             {
                 case Role.Operator:
-                    if (_driveTickTimer.IsDue())
-                    {
-                        OperatorTick();
-                    }
+                    if (_driveTickTimer.IsDue()) OperatorTick();
                     break;
                 case Role.Customer:
                     ClientTick();
@@ -55,16 +58,15 @@ public class ClientApp(
         }
     }
 
-    protected override bool Accept(ReceivedPacket receivedPacket)
-    {
-        return receivedPacket.Sender.Equals(serverEndpoint);
-    }
+    protected override bool Accept(ReceivedPacket receivedPacket) 
+        => receivedPacket.Sender.Equals(serverEndpoint);
 
     private void OperatorTick()
     {
         if (Console.KeyAvailable)
         {
             var pressedKey = Console.ReadKey(true);
+            
             switch (pressedKey.Key)
             {
                 case ConsoleKey.W:
@@ -86,7 +88,7 @@ public class ClientApp(
             }
         }
 
-        clientSender.SendTo(serverEndpoint, new DriveMessage()
+        clientSender.SendTo(serverEndpoint, new DriveMessage
         {
             Speed = (sbyte)((sbyte)_moveDirection * ClientConfig.SpeedPercentage),
             Rotate = (sbyte)((sbyte)_rotateDirection * ClientConfig.RotatePercentage)
@@ -99,24 +101,16 @@ public class ClientApp(
 
         if (_renderTimer.IsDue())
         {
-            ConsoleView.Render(state.MapState, state.Position, state.Angle, state.Orders.Values, state.CurrentOrder,
+            ConsoleView.Render(state.MapState, state.Position, 
+                state.Angle, state.Orders.Values, state.CurrentOrder,
                 state.LastEvent, $"Enter delivery point (x y): {_customerInput}");
         }
 
-        if (_heartbeatTimer.IsDue())
-        {
-            clientSender.SendTo(serverEndpoint, new HeartbeatMessage());
-        }
+        if (_heartbeatTimer.IsDue()) clientSender.SendTo(serverEndpoint, new HeartbeatMessage());
+
+        if (!_customerEntriesQueue.TryDequeue(out var input) || input == null) return;
         
-        var tryDequeue = _customerEntriesQueue.TryDequeue(out var input);
-        
-        if (tryDequeue && input != null)
-        {
-            if (TryParseInputToMapPoint(input, out var deliveryPoint))
-            {
-                SendOrderCreate(deliveryPoint);
-            }
-        }
+        if (TryParseInputToMapPoint(input, out var deliveryPoint)) SendOrderCreate(deliveryPoint);
     }
 
     private void ReadCustomerKeys()
@@ -143,22 +137,20 @@ public class ClientApp(
 
     private void SendOrderCreate(Point<byte> deliveryPoint)
     {
-        clientSender.SendTo(serverEndpoint, new OrderCreateMessage()
+        clientSender.SendTo(serverEndpoint, new OrderCreateMessage
         {
             X = deliveryPoint.X,
             Y = deliveryPoint.Y
         });
     }
 
-    private bool TryParseInputToMapPoint(string input, [NotNullWhen(true)] out Point<byte>? point)
+    private bool TryParseInputToMapPoint(string input, 
+        [NotNullWhen(true)] out Point<byte>? point)
     {
         point = null;
         var parts = input.Split(' ');
         
-        if (parts.Length != 2)
-        {
-            return false;
-        }
+        if (parts.Length != 2) return false;
         
         var parseXResult = byte.TryParse(parts[0], out var x); 
         var parseYResult = byte.TryParse(parts[1], out var y);
@@ -170,6 +162,7 @@ public class ClientApp(
         }
 
         point = new Point<byte>(x, y); 
+        
         return true;
     }
 

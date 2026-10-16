@@ -2,14 +2,8 @@ using DeliveryService.Protocol.Messages;
 
 namespace DeliveryService.Protocol.Models;
 
-public class Packet
+public class Packet(PacketHeader packetHeader, IMessage message)
 {
-    public Packet(PacketHeader packetHeader, IMessage message)
-    {
-        Message = message;
-        PacketHeader = packetHeader;
-    }
-
-    public PacketHeader PacketHeader { get; init; }
-    public IMessage Message { get; init; }
+    public PacketHeader PacketHeader { get; } = packetHeader;
+    public IMessage Message { get; } = message;
 }

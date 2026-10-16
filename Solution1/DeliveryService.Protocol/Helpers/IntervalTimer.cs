@@ -11,14 +11,12 @@ public class IntervalTimer(TimeSpan interval, bool isDueOnCreate = true)
     {
         if (_timer.Elapsed < Interval)
         {
-            if (isDueOnCreate)
-            {
-                isDueOnCreate = false;
-                return true;
-            }
+            if (!isDueOnCreate) return false;
             
-            return false;
+            isDueOnCreate = false;
+            return true;
         }
+        
         _timer.Restart();
         isDueOnCreate = false;
         return true;

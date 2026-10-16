@@ -1,5 +1,4 @@
 using DeliveryService.Protocol.Core;
-using DeliveryService.Protocol;
 using DeliveryService.Protocol.Enums;
 using DeliveryService.Protocol.Helpers;
 using DeliveryService.Protocol.Messages;
@@ -24,10 +23,7 @@ public class ServerApp(
     {
         if (TryRejectUnregistered(receivedPacket, out var session)) return false;
 
-        if (session != null)
-        {
-            session.LastAliveTime = DateTime.UtcNow;
-        }
+        if (session != null) session.LastAliveTime = DateTime.UtcNow;
 
         return true;
     }
@@ -37,6 +33,7 @@ public class ServerApp(
         var isRegistered = serverSessions.TryGetSessionByAddress(receivedPacket.Sender, out session);
 
         if (isRegistered) return false;
+        
         if (receivedPacket.Packet.PacketHeader.MessageType == MessageType.Hello) return false;
         
         serverSender.SendTo(receivedPacket.Sender, new ErrorMessage
@@ -49,9 +46,6 @@ public class ServerApp(
 
     private void CheckSessionTimeout()
     {
-        if (_checkTimer.IsDue())
-        {
-            serverSessions.UpdateSessionsAliveStatus();
-        }
+        if (_checkTimer.IsDue()) serverSessions.UpdateSessionsAliveStatus();
     }
 }

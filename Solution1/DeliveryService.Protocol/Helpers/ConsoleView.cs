@@ -15,7 +15,8 @@ public static class ConsoleView
     private static readonly object ConsoleLock = new();
     private static int _lastLineCount;
 
-    public static void Render(MapState? map, Point<float>? robot, float? angle, IReadOnlyCollection<Order> orders,
+    public static void Render(MapState? map, Point<float>? robot, 
+        float? angle, IReadOnlyCollection<Order> orders,
         Order? currentOrder, string lastEvent, string footer = "")
     {
         var sb = new StringBuilder();
@@ -27,7 +28,8 @@ public static class ConsoleView
         else
         {
             AppendMap(sb, map, robot, currentOrder);
-            var robotText = robot == null ? "unknown" : $"({robot.X:F1}, {robot.Y:F1}) angle {angle:F0}°";
+            var robotText = robot == null ? "unknown" : $"({robot.X:F1}, " +
+                                                        $"{robot.Y:F1}) angle {angle:F0}°";
             sb.AppendLine($"Robot: {robotText}   Storage: {map.StoragePoint}");
             sb.AppendLine($"Legend: {Robot} robot  {Storage} storage  {Delivery} delivery  {Wall} wall");
         }
@@ -37,6 +39,7 @@ public static class ConsoleView
         if (orders.Count > 0)
         {
             sb.AppendLine("Orders:");
+            
             foreach (var order in orders)
             {
                 sb.AppendLine($"  {(order == currentOrder ? '>' : ' ')} {FormatOrder(order)}");
@@ -45,17 +48,14 @@ public static class ConsoleView
 
         sb.AppendLine($"Last event: {lastEvent}");
 
-        if (footer != "")
-        {
-            sb.AppendLine(footer);
-        }
+        if (footer != "") sb.AppendLine(footer);
 
         Write(sb.ToString());
     }
 
-    private static void AppendMap(StringBuilder sb, MapState map, Point<float>? robot, Order? currentOrder)
+    private static void AppendMap(StringBuilder sb, MapState map, 
+        Point<float>? robot, Order? currentOrder)
     {
-        // -1 never matches a cell, so an unknown robot is simply not drawn.
         var robotX = robot == null ? -1 : (int)Math.Floor(robot.X);
         var robotY = robot == null ? -1 : (int)Math.Floor(robot.Y);
 
@@ -76,10 +76,7 @@ public static class ConsoleView
 
     private static string FormatOrder(Order order) =>
         $"#{order.Id} {order.OrderStatus} -> {order.DeliveryPoint}";
-
-    // Overwrite in place instead of Console.Clear() to avoid flicker. Every line is padded to the window
-    // width so leftovers of the previous frame are erased without relying on ANSI escapes, and the frame is
-    // clipped to the window height so the console never scrolls (which would break the cursor reset).
+    
     private static void Write(string text)
     {
         lock (ConsoleLock)

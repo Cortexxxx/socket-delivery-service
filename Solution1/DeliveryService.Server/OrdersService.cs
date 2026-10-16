@@ -8,8 +8,7 @@ public class OrdersService
 {
     public readonly Dictionary<ushort, Order> Orders = new();
     public Order? CurrentOrder { get; private set; }
-    private Queue<Order> OrdersQueue { get; set; } = new();
-    public readonly List<(ushort OrderId, OrderStatus status)> Changes = new();
+    private Queue<Order> OrdersQueue { get; } = new();
     private ushort _ordersSeq;
     
     public Order CreateOrder(IPEndPoint customerEndpoint, Point<byte> deliveryPoint)
@@ -21,28 +20,56 @@ public class OrdersService
         _ordersSeq++;
         return order;
     }
-
-    public void SetNewOrderInProcess()
+    
+    public bool TryChangeStatus(Point<float> robotPosition, Point<byte> storagePoint)
     {
-        if ((CurrentOrder == null || CurrentOrder.OrderStatus == OrderStatus.Delivered))
+        var wasStatusChanged = false;
+        
+        if (CurrentOrder == null) return false;
+        
+        switch (CurrentOrder.OrderStatus)
         {
-            if (OrdersQueue.TryDequeue(out var order))
-            {
-                CurrentOrder = order;
-            }
-            else
-            {
-                CurrentOrder = null;
-            }
+            case OrderStatus.Pending:
+                AdvanceCurrentOrder();
+                wasStatusChanged = true;
+                break;
+            case OrderStatus.PickingUp:
+                if (Point<float>.Distance(robotPosition, 
+                        Point<float>.ByteToCentralFloatPoint(storagePoint)) <= 0.5)
+                {
+                    AdvanceCurrentOrder();
+                    wasStatusChanged = true;
+                }
+                break;
+            case OrderStatus.InTransit:
+                if (CurrentOrder != null && Point<float>.Distance(robotPosition, 
+                        Point<float>.ByteToCentralFloatPoint(CurrentOrder.DeliveryPoint)) <= 0.5)
+                {
+                    AdvanceCurrentOrder();
+                    wasStatusChanged = true;
+                }
+                break;
+            case OrderStatus.Delivered:
+                SetNewOrderInProcess();
+                wasStatusChanged = true;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
+
+        return wasStatusChanged;
     }
 
-    public KeyValuePair<ushort, Order>[]? GetOrdersByIpEndpoint(IPEndPoint ipEndPoint)
+    private void SetNewOrderInProcess()
     {
-        return Orders.Where(o => o.Value.Customer.Equals(ipEndPoint)).ToArray();
+        if (CurrentOrder == null || CurrentOrder.OrderStatus == OrderStatus.Delivered) 
+            CurrentOrder = OrdersQueue.TryDequeue(out var order) ? order : null;
     }
 
-    public void AdvanceCurrentOrder()
+    public IEnumerable<KeyValuePair<ushort, Order>> GetOrdersByIpEndpoint(IPEndPoint ipEndPoint) 
+        => Orders.Where(o => o.Value.Customer.Equals(ipEndPoint));
+
+    private void AdvanceCurrentOrder()
     {
         if (CurrentOrder != null)
         {
@@ -53,4 +80,5 @@ public class OrdersService
             Console.WriteLine("Error: No current order!");
         }
     }
+
 }

@@ -9,16 +9,14 @@ namespace DeliveryService.Robot;
 
 public class RobotHandlers(RobotState state)
 {
-
     [MessageHandler]
-    public void OnAck(IPEndPoint sender, AckMessage message)
-    {
-    }
+    public void OnAck(IPEndPoint sender, AckMessage message) { }
 
     [MessageHandler]
     public void OnMap(IPEndPoint sender, MapMessage message)
     {
-        state.MapState = new MapState(message.GetBoolMatrixFromBitmask(), message.Bitmask, message.StoragePoint);
+        state.MapState = new MapState(message.GetBoolMatrixFromBitmask(), 
+            message.Bitmask, message.StoragePoint);
         var startPoint = Point<float>.ByteToCentralFloatPoint(message.StoragePoint);
         
         if (state.MapState.CanMove(startPoint))

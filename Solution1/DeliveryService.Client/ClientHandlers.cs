@@ -12,7 +12,8 @@ public class ClientHandlers(ClientState clientState)
     [MessageHandler]
     public void OnMap(IPEndPoint endPoint, MapMessage message)
     {
-        clientState.MapState = new MapState(message.GetBoolMatrixFromBitmask(), message.Bitmask, message.StoragePoint);
+        clientState.MapState = new MapState(message.GetBoolMatrixFromBitmask()
+            , message.Bitmask, message.StoragePoint);
         clientState.IsRegistered = true;
     }
     
@@ -25,7 +26,8 @@ public class ClientHandlers(ClientState clientState)
         }
         else
         {
-            clientState.Orders.Add(message.OrderId, new Order(null!, message.Endpoint, message.OrderId));
+            clientState.Orders.Add(message.OrderId, 
+                new Order(null!, message.Endpoint, message.OrderId));
         }
     }
     
@@ -33,6 +35,7 @@ public class ClientHandlers(ClientState clientState)
     public void OnError(IPEndPoint endPoint, ErrorMessage message)
     {
         clientState.LastEvent = "Error: " + message.ErrorCode;
+        
         switch (message.ErrorCode)
         {
             case ErrorCode.UnknownMessage:

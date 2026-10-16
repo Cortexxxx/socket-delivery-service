@@ -32,9 +32,10 @@ public class RobotState
     public void Drive()
     {
         var currentTimestamp = Stopwatch.GetTimestamp();
-        var dt = (float)Stopwatch.GetElapsedTime( _lastDriveStamp, currentTimestamp).TotalSeconds;
+        var dt = (float)Stopwatch.GetElapsedTime(_lastDriveStamp, currentTimestamp).TotalSeconds;
         
-        if (TimeSpan.FromSeconds(dt) > TimeSpan.FromMilliseconds(RobotConfig.DeadManSwitchIntervalMilliseconds))
+        if (TimeSpan.FromSeconds(dt) 
+            > TimeSpan.FromMilliseconds(RobotConfig.DeadManSwitchIntervalMilliseconds))
         {
             _lastDriveStamp = currentTimestamp;
         }
@@ -43,9 +44,11 @@ public class RobotState
 
         _lastDriveStamp = currentTimestamp;
         Angle += _rotate / 100f * RobotConfig.MaxRotateSpeed * dt;
-        
-        var newXPosition = Position.X + (float)(_speed / 100f * RobotConfig.MaxSpeed * Math.Cos(double.DegreesToRadians(Angle))) * dt;
-        var newYPosition = Position.Y + (float)(_speed / 100f * RobotConfig.MaxSpeed * Math.Sin(double.DegreesToRadians(Angle))) * dt;
+
+        var angleRadians = double.DegreesToRadians(Angle);
+        var speed = _speed / 100f * RobotConfig.MaxSpeed;
+        var newXPosition = Position.X + (float)(speed * Math.Cos(angleRadians)) * dt;
+        var newYPosition = Position.Y + (float)(speed * Math.Sin(angleRadians)) * dt;
         
         if (MapState != null && MapState.CanMove(new Point<float>(newXPosition, newYPosition)))
         {

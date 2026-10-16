@@ -6,18 +6,17 @@ using DeliveryService.Protocol.Enums;
 
 namespace DeliveryService.Protocol.Messages;
 
-[Message(MessageType.Ack, Flags = PacketFlags.None )]
+[Message(MessageType.Ack, Flags = PacketFlags.None)]
 public sealed class AckMessage : IMessage
 {
     public ushort Seq { get; init; }
     
-    public static bool TryParse(ReadOnlySpan<byte> payload, [NotNullWhen(true)] out AckMessage? message)
+    public static bool TryParse(ReadOnlySpan<byte> payload, 
+        [NotNullWhen(true)] out AckMessage? message)
     {
-        if (payload.Length != MessagesConstants.AckPayloadSize)
-        {
-            message = null;
-            return false;
-        }
+        message = null;
+        
+        if (payload.Length != MessagesConstants.AckPayloadSize) return false;
 
         var seq = BinaryPrimitives.ReadUInt16LittleEndian(payload);
             
@@ -33,10 +32,7 @@ public sealed class AckMessage : IMessage
     {
         written = 0;
         
-        if (buffer.Length < MessagesConstants.AckPayloadSize)
-        {
-            return false;
-        }
+        if (buffer.Length < MessagesConstants.AckPayloadSize) return false;
 
         BinaryPrimitives.WriteUInt16LittleEndian(buffer[..MessagesConstants.AckPayloadSize], Seq);
         written = MessagesConstants.AckPayloadSize;

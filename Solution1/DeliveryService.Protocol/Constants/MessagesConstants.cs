@@ -37,4 +37,6 @@ public static class MessagesConstants
 
     // Map
     public const int MapMaxSize = 9504;
+    public const int MapOffset = 2;
+    public const int MapStoragePointSize = 2;
 }

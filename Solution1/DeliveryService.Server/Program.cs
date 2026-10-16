@@ -1,6 +1,4 @@
-﻿using DeliveryService.Protocol;
-using DeliveryService.Protocol.Core;
-using DeliveryService.Protocol.Map;
+﻿using DeliveryService.Protocol.Map;
 using DeliveryService.Protocol.Messages;
 using DeliveryService.Protocol.Network;
 using DeliveryService.Server;
@@ -21,6 +19,7 @@ var mapState = new MapState(map, bitmaskMap, storagePoint);
 
 var node = NetworkNodeFactory.Create(NetworkConfig.ServerPort,
     sender => new ServerHandlers(serverSessions, sender, mapState, ordersService));
+
 var serverApp = new ServerApp(node.Transport, node.Sender, serverSessions, node.ReceiveProcessor);
 
 node.Transport.Start();

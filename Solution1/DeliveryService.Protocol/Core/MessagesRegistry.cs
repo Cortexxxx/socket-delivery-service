@@ -12,19 +12,12 @@ namespace DeliveryService.Protocol.Core;
 public delegate bool TypedParse<T>(ReadOnlySpan<byte> payload, out T? message) where T: class, IMessage; 
 public delegate bool ParseFunc(ReadOnlySpan<byte> payload, out IMessage? message);
 
-/// <summary>
-/// Built once on application start. Read-only after initialization.
-/// </summary>
 public sealed class MessagesRegistry
 {
     private readonly Dictionary<MessageType, ParseFunc> _messageParses;
     private readonly Dictionary<Type, (MessageType messageType, PacketFlags flags)> _messageInfos;
     
-    /// <summary>
-    /// Initializes messages registry. Fills the messages dictionary once when the application starts.
-    /// Uses reflection to find all messages with the attribute.
-    /// </summary>
-    public MessagesRegistry(Assembly? assembly)
+    public MessagesRegistry(Assembly assembly)
     {
         _messageParses = new Dictionary<MessageType, ParseFunc>();
         _messageInfos = new Dictionary<Type, (MessageType messageType, PacketFlags flags)>();
@@ -59,10 +52,7 @@ public sealed class MessagesRegistry
             _messageInfos[messageInfo.type] = (messageType, messageInfo.attribute.Flags);
         }
     }
-
-    /// <summary>
-    /// Parsing message payload to message object
-    /// </summary>
+    
     public bool TryParsePayload(MessageType messageType, 
         ReadOnlySpan<byte> payload, 
         out IMessage? message, 
@@ -71,40 +61,29 @@ public sealed class MessagesRegistry
         message = default;
         errorCode = default;
         
-        var isMessageExists = _messageParses.TryGetValue(messageType, out var tryParseDelegate);
-
-        if (!isMessageExists)
+        if (!_messageParses.TryGetValue(messageType, out var tryParseDelegate))
         {
             errorCode = ErrorCode.UnknownMessage;
             return false;
         }
-         
-        var tryParseResult = tryParseDelegate!.Invoke(payload, out message);
-
-        if (!tryParseResult)
-        {
-            errorCode = ErrorCode.BadPayload;
-            return false;
-        }
         
-        return true;
+        if (tryParseDelegate.Invoke(payload, out message)) return true;
+        
+        errorCode = ErrorCode.BadPayload;
+        
+        return false;
     }
     
-    /// <summary>
-    /// Gets info about message type
-    /// </summary>
-    /// <returns>Whether message exists in registry</returns>
-    public bool TryGetMessageInfo(IMessage message, out (MessageType messageType, PacketFlags messageFlags) messageInfo)
+    public bool TryGetMessageInfo(IMessage message, 
+        out (MessageType messageType, PacketFlags messageFlags) messageInfo)
     {
         messageInfo = default;
         var messageType = message.GetType();
         
-        if (!_messageInfos.TryGetValue(messageType, out var info))
-        {
-            return false;
-        }
+        if (!_messageInfos.TryGetValue(messageType, out var info)) return false;
         
         messageInfo = info;
+        
         return true;
     }
 
@@ -113,7 +92,6 @@ public sealed class MessagesRegistry
     /// The dictionary that stores all messages requires ParseFunc without a generic type.
     /// This method uses a closure, so it stores the concrete TryParse method inside.
     /// </summary>
-    /// <typeparam name="T">Message type</typeparam>
     private static ParseFunc Wrap<T>(TypedParse<T> typedParse) where T : class, IMessage
     {
         return (ReadOnlySpan<byte> payload, out IMessage? message) =>
@@ -136,19 +114,13 @@ public sealed class MessagesRegistry
     {
         var delegateType = typeof(TypedParse<>).MakeGenericType(messageType);
         var typedParseDelegate = Delegate.CreateDelegate(delegateType, tryParse);
-        var wrapMethodInfo = typeof(MessagesRegistry).GetMethod(nameof(Wrap), BindingFlags.NonPublic | BindingFlags.Static)!;
+        var wrapMethodInfo = typeof(MessagesRegistry).GetMethod(nameof(Wrap), 
+            BindingFlags.NonPublic | BindingFlags.Static)!;
         var wrapGenericMethod = wrapMethodInfo.MakeGenericMethod(messageType);
         var parseFuncObject = wrapGenericMethod.Invoke(null, [typedParseDelegate]);
         return (ParseFunc)parseFuncObject;
     }
     
-    /// <summary>
-    /// Throws an exception with a message
-    /// if the message class does not have a TryParse method
-    /// or if it has an incorrect signature.
-    /// </summary>
-    /// <param name="tryParseMethod">TryParse method from message class</param>
-    /// <param name="messageInfo">Message type and attribute</param>
     private static void CheckTryParseMethod(MethodInfo? tryParseMethod, 
         (Type type, MessageAttribute? attribute) messageInfo)
     {

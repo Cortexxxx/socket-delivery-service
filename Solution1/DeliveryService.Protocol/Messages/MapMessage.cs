@@ -6,39 +6,31 @@ using DeliveryService.Protocol.Models;
 
 namespace DeliveryService.Protocol.Messages;
 
-[Message(MessageType.Map, Flags = PacketFlags.NeedAck )]
+[Message(MessageType.Map, Flags = PacketFlags.NeedAck)]
 public sealed class MapMessage : IMessage
 {
-    public byte Width { get; init; }
-    public byte Height { get; init; }
+    public required byte Width { get; init; }
+    public required byte Height { get; init; }
     public required byte[] Bitmask { get; init; }
-    public Point<byte> StoragePoint { get; init; }
+    public required Point<byte> StoragePoint { get; init; }
 
-    public static bool TryParse(ReadOnlySpan<byte> payload, [NotNullWhen(true)] out MapMessage? message)
+    public static bool TryParse(ReadOnlySpan<byte> payload, 
+        [NotNullWhen(true)] out MapMessage? message)
     {
         message = null;
 
-        if (payload.Length < 2)
-        {
-            return false;
-        }
+        if (payload.Length < 2) return false;
         
         var height = payload[0];
         var width = payload[1];
         var mapSize = height * width;
         
-        if (width <= 0 || height <= 0 || mapSize > MessagesConstants.MapMaxSize)
-        {
-            return false;
-        }
+        if (width <= 0 || height <= 0 || mapSize > MessagesConstants.MapMaxSize) return false;
         
         var bitmaskLength = (width * height + 7) / 8;
         var payloadLength = 2 + bitmaskLength + 2;
 
-        if (payloadLength != payload.Length)
-        {
-            return false;
-        }
+        if (payloadLength != payload.Length) return false;
 
         var bitmask = new byte[bitmaskLength];
         
@@ -56,7 +48,7 @@ public sealed class MapMessage : IMessage
             Width = width,
             Height = height,
             Bitmask = bitmask,
-            StoragePoint = new Point<byte>()
+            StoragePoint = new Point<byte>
             {
                 X = storageX,
                 Y = storageY
@@ -70,7 +62,7 @@ public sealed class MapMessage : IMessage
     {
         written = 0;
 
-        var payloadLength = 2 + Bitmask.Length + 2;
+        var payloadLength = MessagesConstants.MapOffset + Bitmask.Length + MessagesConstants.MapStoragePointSize;
 
         if (Width <= 0 
             || Height <= 0 
@@ -86,11 +78,11 @@ public sealed class MapMessage : IMessage
 
         for (var i = 0; i < Bitmask.Length; i++)
         {
-            buffer[2 + i] = Bitmask[i];
+            buffer[MessagesConstants.MapOffset + i] = Bitmask[i];
         }
 
-        buffer[2 + Bitmask.Length] = StoragePoint.X;
-        buffer[2 + Bitmask.Length + 1] = StoragePoint.Y;
+        buffer[MessagesConstants.MapOffset + Bitmask.Length] = StoragePoint.X;
+        buffer[MessagesConstants.MapOffset + Bitmask.Length + 1] = StoragePoint.Y;
         
         written = payloadLength;
         
@@ -117,22 +109,17 @@ public sealed class MapMessage : IMessage
         return result;
     }
 
-    public static bool TryGetBitmaskFromBoolMatrix(bool[,]? boolMap, [NotNullWhen(true)] out byte[]? bitmask)
+    public static bool TryGetBitmaskFromBoolMatrix(bool[,]? boolMap, 
+        [NotNullWhen(true)] out byte[]? bitmask)
     {
         bitmask = null;
 
-        if (boolMap == null)
-        {
-            return false;
-        }
+        if (boolMap == null) return false;
         
         var width = boolMap.GetLength(0);
         var height = boolMap.GetLength(1);
 
-        if (width == 0 || height == 0)
-        {
-            return false;
-        }
+        if (width == 0 || height == 0) return false;
 
         bitmask = new byte[(width * height + 7) / 8];
 
