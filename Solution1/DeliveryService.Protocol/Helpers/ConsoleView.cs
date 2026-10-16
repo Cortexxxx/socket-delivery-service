@@ -2,7 +2,7 @@ using System.Text;
 using DeliveryService.Protocol.Map;
 using DeliveryService.Protocol.Models;
 
-namespace DeliveryService.Protocol;
+namespace DeliveryService.Protocol.Helpers;
 
 public static class ConsoleView
 {

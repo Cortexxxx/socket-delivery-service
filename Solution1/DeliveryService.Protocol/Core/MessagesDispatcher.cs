@@ -3,10 +3,10 @@ using System.Reflection;
 using DeliveryService.Protocol.Attributes;
 using DeliveryService.Protocol.Constants;
 using DeliveryService.Protocol.Enums;
-using DeliveryService.Protocol.Interfaces;
+using DeliveryService.Protocol.Messages;
 using DeliveryService.Protocol.Models;
 
-namespace DeliveryService.Protocol;
+namespace DeliveryService.Protocol.Core;
 
 public delegate void HandleFunc(IPEndPoint sender, IMessage message);
 public delegate void TypedHandle<in T>(IPEndPoint sender, T message) where T : class, IMessage;

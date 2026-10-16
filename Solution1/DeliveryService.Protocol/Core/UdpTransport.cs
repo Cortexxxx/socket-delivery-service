@@ -2,11 +2,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Channels;
 using DeliveryService.Protocol.Constants;
-using DeliveryService.Protocol.Interfaces;
 using DeliveryService.Protocol.Logger;
+using DeliveryService.Protocol.Messages;
 using DeliveryService.Protocol.Models;
 
-namespace DeliveryService.Protocol;
+namespace DeliveryService.Protocol.Core;
 
 /// <summary>
 /// Owns the UDP socket and the receive thread. Parsed packets go to the receive queue,

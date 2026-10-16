@@ -3,10 +3,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Text;
 using DeliveryService.Client.Operator;
-using DeliveryService.Protocol;
+using DeliveryService.Protocol.Core;
 using DeliveryService.Protocol.Enums;
+using DeliveryService.Protocol.Helpers;
 using DeliveryService.Protocol.Messages;
 using DeliveryService.Protocol.Models;
+using DeliveryService.Protocol.Network;
 
 namespace DeliveryService.Client;
 

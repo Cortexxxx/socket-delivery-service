@@ -1,7 +1,7 @@
 using System.Drawing;
 using System.Net;
-using DeliveryService.Protocol;
 using DeliveryService.Protocol.Attributes;
+using DeliveryService.Protocol.Core;
 using DeliveryService.Protocol.Enums;
 using DeliveryService.Protocol.Map;
 using DeliveryService.Protocol.Messages;

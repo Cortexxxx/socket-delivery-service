@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using System.Net;
-using DeliveryService.Protocol;
+using DeliveryService.Protocol.Core;
 using DeliveryService.Protocol.Enums;
+using DeliveryService.Protocol.Helpers;
 using DeliveryService.Protocol.Messages;
 using DeliveryService.Protocol.Models;
+using DeliveryService.Protocol.Network;
 
 namespace DeliveryService.Robot;
 

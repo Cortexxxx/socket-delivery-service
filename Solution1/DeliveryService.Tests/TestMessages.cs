@@ -1,8 +1,7 @@
-using DeliveryService.Protocol;
 using DeliveryService.Protocol.Attributes;
 using DeliveryService.Protocol.Constants;
 using DeliveryService.Protocol.Enums;
-using DeliveryService.Protocol.Interfaces;
+using DeliveryService.Protocol.Messages;
 
 namespace DeliveryService.Tests;
 

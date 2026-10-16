@@ -1,3 +1,4 @@
+using DeliveryService.Protocol.Messages;
 namespace DeliveryService.Protocol.Constants;
 
 public static class ErrorsConstants

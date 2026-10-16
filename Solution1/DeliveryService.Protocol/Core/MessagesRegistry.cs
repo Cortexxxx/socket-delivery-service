@@ -2,9 +2,9 @@ using System.Reflection;
 using DeliveryService.Protocol.Attributes;
 using DeliveryService.Protocol.Constants;
 using DeliveryService.Protocol.Enums;
-using DeliveryService.Protocol.Interfaces;
+using DeliveryService.Protocol.Messages;
 
-namespace DeliveryService.Protocol;
+namespace DeliveryService.Protocol.Core;
 
 // We need two delegates because a dictionary cannot store TryParse delegates
 // as values of different generic types. The dictionary stores a general ParseFunc delegate that uses a closure

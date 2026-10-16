@@ -1,7 +1,7 @@
 using System.Net;
-using DeliveryService.Protocol.Interfaces;
+using DeliveryService.Protocol.Messages;
 
-namespace DeliveryService.Protocol;
+namespace DeliveryService.Protocol.Core;
 
 public class MessageSender(UdpTransport udpTransport)
 {

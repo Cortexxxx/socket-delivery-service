@@ -1,6 +1,7 @@
 using DeliveryService.Protocol.Models;
+using DeliveryService.Protocol.Network;
 
-namespace DeliveryService.Protocol;
+namespace DeliveryService.Protocol.Core;
 
 /// <summary>
 /// Common main loop of an application: do the periodic work, then take one received packet

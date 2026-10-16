@@ -1,5 +1,6 @@
 using DeliveryService.Protocol;
 using DeliveryService.Protocol.Constants;
+using DeliveryService.Protocol.Core;
 using DeliveryService.Protocol.Enums;
 using DeliveryService.Protocol.Messages;
 

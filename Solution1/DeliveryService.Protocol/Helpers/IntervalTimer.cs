@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace DeliveryService.Protocol;
+namespace DeliveryService.Protocol.Helpers;
 
 public class IntervalTimer(TimeSpan interval, bool isDueOnCreate = true)
 {

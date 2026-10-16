@@ -1,5 +1,6 @@
 using System.Net;
-using DeliveryService.Protocol;
+using DeliveryService.Protocol.Core;
+using DeliveryService.Protocol.Network;
 using DeliveryService.Robot;
 
 IPEndPoint serverEndpoint = new(IPAddress.Parse(NetworkConfig.ServerHost), NetworkConfig.ServerPort);

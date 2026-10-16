@@ -1,7 +1,8 @@
+using DeliveryService.Protocol.Core;
 using DeliveryService.Protocol.Logger;
 using DeliveryService.Protocol.Messages;
 
-namespace DeliveryService.Protocol;
+namespace DeliveryService.Protocol.Network;
 
 public static class NetworkNodeFactory
 {

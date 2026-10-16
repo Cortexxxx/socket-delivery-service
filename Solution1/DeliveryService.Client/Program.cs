@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using DeliveryService.Client;
-using DeliveryService.Protocol;
+using DeliveryService.Protocol.Core;
 using DeliveryService.Protocol.Enums;
+using DeliveryService.Protocol.Network;
 
 IPEndPoint serverEndpoint = new(IPAddress.Parse(NetworkConfig.ServerHost), NetworkConfig.ServerPort);
 

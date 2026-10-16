@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using DeliveryService.Protocol.Attributes;
 using DeliveryService.Protocol.Constants;
 using DeliveryService.Protocol.Enums;
-using DeliveryService.Protocol.Interfaces;
 
 namespace DeliveryService.Protocol.Messages;
 
