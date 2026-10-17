@@ -43,6 +43,12 @@ public class ServerHandlers(ServerSessions serverSessions,
     [MessageHandler]
     public void OnTelemetry(IPEndPoint sender, TelemetryMessage message)
     {        
+        if (serverSessions.Robot != null && !serverSessions.Robot.Equals(sender))
+        {
+            SendForbidden(sender);
+            return;
+        }
+        
         SendTelemetryToOperator(message);
 
         if (ordersService.CurrentOrder == null) return;
@@ -60,7 +66,13 @@ public class ServerHandlers(ServerSessions serverSessions,
     [MessageHandler]
     public void OnDrive(IPEndPoint sender, DriveMessage message)
     {
-        if (serverSessions.Operator == null || !serverSessions.Operator.Equals(sender)) return;
+        if (serverSessions.Operator == null) return;
+
+        if (!serverSessions.Operator.Equals(sender))
+        {
+            SendForbidden(sender);
+            return;
+        }
         
         if (serverSessions.Robot == null)
         {
@@ -81,8 +93,13 @@ public class ServerHandlers(ServerSessions serverSessions,
     [MessageHandler]
     public void OnOrderCreate(IPEndPoint sender, OrderCreateMessage message)
     {
-        if (!serverSessions.TryGetSessionByAddress(sender, out var session) 
-            || session.Role != Role.Customer) return;
+        if (!serverSessions.TryGetSessionByAddress(sender, out var session)) return;
+        
+        if (session.Role != Role.Customer)
+        {
+            SendForbidden(sender);
+            return;
+        }
         
         var point = new Point<byte>(message.X, message.Y);
         
@@ -99,6 +116,14 @@ public class ServerHandlers(ServerSessions serverSessions,
                 ErrorCode = ErrorCode.InvalidPoint
             });
         }
+    }
+
+    private void SendForbidden(IPEndPoint sender)
+    {
+        serverSender.SendTo(sender, new ErrorMessage
+        {
+            ErrorCode = ErrorCode.Forbidden
+        });
     }
 
     [MessageHandler]
