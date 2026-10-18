@@ -16,7 +16,6 @@ if (!tryLoadMap || !tryGetBitmask || map == null || bitmaskMap == null || storag
 }
 
 var mapState = new MapState(map, bitmaskMap, storagePoint);
-
 var node = NetworkNodeFactory.Create(NetworkConfig.ServerPort,
     sender => new ServerHandlers(serverSessions, sender, mapState, ordersService));
 

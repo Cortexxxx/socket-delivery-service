@@ -4,7 +4,7 @@ using DeliveryService.Client.Core;
 using DeliveryService.Protocol.Enums;
 using DeliveryService.Protocol.Network;
 
-IPEndPoint serverEndpoint = new(IPAddress.Parse(NetworkConfig.ServerHost), NetworkConfig.ServerPort);
+IPEndPoint serverEndpoint = new(IPAddress.Parse(NetworkConfig.LocalServerHost), NetworkConfig.ServerPort);
 
 var tryParse = false;
 var clientState = new ClientState();

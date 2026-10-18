@@ -2,7 +2,14 @@ using System.Net;
 using DeliveryService.Protocol.Network;
 using DeliveryService.Robot;
 
-IPEndPoint serverEndpoint = new(IPAddress.Parse(NetworkConfig.ServerHost), NetworkConfig.ServerPort);
+var serverHost = NetworkConfig.LocalServerHost;
+var serverPort = NetworkConfig.ServerPort;
+if (args.Length > 1)
+{
+    serverHost = args[0];
+    int.TryParse(args[1], out serverPort);
+}
+IPEndPoint serverEndpoint = new(IPAddress.Parse(serverHost), serverPort);
 
 var robotState = new RobotState();
 var node = NetworkNodeFactory.Create(NetworkConfig.AnyPort, _ => new RobotHandlers(robotState));

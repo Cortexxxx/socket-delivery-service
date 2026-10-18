@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using DeliveryService.Client.Core;
+using DeliveryService.Client.GUI.Windows;
 using DeliveryService.Protocol.Enums;
 using DeliveryService.Protocol.Network;
 
@@ -24,7 +25,7 @@ public partial class App : Application
             
             startWindow.OnRoleChosen += role =>
             {
-                var mainWindow = new MainWindow(CreateApp(role));
+                var mainWindow = new MainWindow(CreateApp(role, startWindow.ServerHost, startWindow.ServerPort));
                 mainWindow.KeyDown += mainWindow.KeyDownHandle;
                 mainWindow.KeyUp += mainWindow.KeyUpHandle;
                 mainWindow.Show();
@@ -38,9 +39,10 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
-    private ClientApp CreateApp(Role role)
+    private ClientApp CreateApp(Role role, 
+        string serverHost = NetworkConfig.LocalServerHost, int serverPort = NetworkConfig.ServerPort)
     {
-        IPEndPoint serverEndpoint = new(IPAddress.Parse(NetworkConfig.ServerHost), NetworkConfig.ServerPort);
+        IPEndPoint serverEndpoint = new(IPAddress.Parse(serverHost), serverPort);
         
         var clientState = new ClientState
         {

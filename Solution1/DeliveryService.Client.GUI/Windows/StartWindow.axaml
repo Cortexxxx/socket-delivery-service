@@ -2,10 +2,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="560"
-        x:Class="DeliveryService.Client.GUI.StartWindow"
+        mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="620"
+        x:Class="DeliveryService.Client.GUI.Windows.StartWindow"
         Title="DeliveryService"
-        Width="420" Height="560"
+        Width="420" Height="620"
         CanResize="False"
         WindowStartupLocation="CenterScreen">
 
@@ -54,6 +54,15 @@
                 </Button>
 
             </StackPanel>
+
+            <TextBlock Classes="section" Margin="2 28 0 8" Text="SERVER" />
+
+            <Grid ColumnDefinitions="*,110" ColumnSpacing="10">
+                <TextBox x:Name="HostBox" Grid.Column="0" Classes="field"
+                         PlaceholderText="IP address (127.0.0.1)" MaxLength="45" />
+                <TextBox x:Name="PortBox" Grid.Column="1" Classes="field port"
+                         PlaceholderText="Port (9000)" MaxLength="5" />
+            </Grid>
         </StackPanel>
 
         <TextBlock x:Name="StatusText" Grid.Row="1" Classes="muted"

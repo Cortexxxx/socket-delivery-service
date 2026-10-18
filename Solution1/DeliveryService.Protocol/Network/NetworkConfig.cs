@@ -4,7 +4,7 @@ public static class NetworkConfig
 {
     // Network
     
-    public const string ServerHost = "127.0.0.1";
+    public const string LocalServerHost = "127.0.0.1";
     public const int ServerPort = 9000;
     public const int AnyPort = 0;
     
