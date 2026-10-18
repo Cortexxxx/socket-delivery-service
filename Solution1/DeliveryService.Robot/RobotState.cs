@@ -11,7 +11,6 @@ public class RobotState
     public MapState? MapState { get; set; }
     public Point<float> Position { get; private set; } = new();
     public float Angle { get; private set; }
-    public string LastEvent { get; set; } = "-";
     public long LastDriveReceived { get; set; }
     private int _speed;
     private int _rotate;
@@ -22,10 +21,6 @@ public class RobotState
         if (MapState != null && MapState.CanMove(target))
         {
             Position = target;
-        }
-        else
-        {
-            LastEvent = "Can't move in wall";
         }
     }
 

@@ -2,9 +2,9 @@ using DeliveryService.Protocol.Enums;
 using DeliveryService.Protocol.Map;
 using DeliveryService.Protocol.Models;
 
-namespace DeliveryService.Client;
+namespace DeliveryService.Client.Core;
 
-public class ClientState
+public sealed class ClientState
 {
     public bool IsRegistered { get; set; }
     public Role Role { get; set; }

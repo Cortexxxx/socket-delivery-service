@@ -19,4 +19,5 @@ public static class NetworkConfig
     public const float LosePacketChance = 0.2f;
     public const int MaxPendingAttempts = 5;
     public const int ReceivedSeqLifetimeSeconds = TryPendIntervalMilliseconds * (MaxPendingAttempts + 1) * 2;
+    public const int MaxPacketsOnTick = 50;
 }

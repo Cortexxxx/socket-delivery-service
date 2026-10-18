@@ -9,4 +9,4 @@ var node = NetworkNodeFactory.Create(NetworkConfig.AnyPort, _ => new RobotHandle
 var robotApp = new RobotApp(node.Transport, node.Sender, robotState, node.ReceiveProcessor, node.ReliabilityLayer, serverEndpoint);
 
 node.Transport.Start();
-robotApp.Run();
+robotApp.RunLoop();

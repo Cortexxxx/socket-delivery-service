@@ -4,11 +4,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService.Protocol", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService.Server", "DeliveryService.Server\DeliveryService.Server.csproj", "{5E4140D9-B4FD-46DB-A9D7-65209DCF278A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService.Client", "DeliveryService.Client\DeliveryService.Client.csproj", "{6C467C96-F4EB-4F84-8042-61E5536791E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService.Client.Console", "DeliveryService.Client.Console\DeliveryService.Client.Console.csproj", "{6C467C96-F4EB-4F84-8042-61E5536791E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService.Robot", "DeliveryService.Robot\DeliveryService.Robot.csproj", "{4742BBAF-3190-4D93-9AE3-933D8CF3E3CB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService.Tests", "DeliveryService.Tests\DeliveryService.Tests.csproj", "{28236276-433F-42EF-8D71-D842150D9D83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService.Client.Core", "DeliveryService.Client.Core\DeliveryService.Client.Core.csproj", "{B2187BEC-03D2-418A-9336-CE897C473D96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService.Client.GUI", "DeliveryService.Client.GUI\DeliveryService.Client.GUI.csproj", "{AFB301C4-400E-4233-8438-B20A72AC6BE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +40,13 @@ Global
 		{28236276-433F-42EF-8D71-D842150D9D83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28236276-433F-42EF-8D71-D842150D9D83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28236276-433F-42EF-8D71-D842150D9D83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2187BEC-03D2-418A-9336-CE897C473D96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2187BEC-03D2-418A-9336-CE897C473D96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2187BEC-03D2-418A-9336-CE897C473D96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2187BEC-03D2-418A-9336-CE897C473D96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFB301C4-400E-4233-8438-B20A72AC6BE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFB301C4-400E-4233-8438-B20A72AC6BE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFB301C4-400E-4233-8438-B20A72AC6BE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFB301C4-400E-4233-8438-B20A72AC6BE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

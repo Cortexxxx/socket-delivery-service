@@ -2,7 +2,7 @@ using System.Text;
 using DeliveryService.Protocol.Map;
 using DeliveryService.Protocol.Models;
 
-namespace DeliveryService.Protocol.Helpers;
+namespace DeliveryService.Client.Console;
 
 public static class ConsoleView
 {
@@ -15,6 +15,15 @@ public static class ConsoleView
     private static readonly object ConsoleLock = new();
     private static int _lastLineCount;
 
+    public static void DisplayClientStartMenu()
+    {
+        System.Console.Clear();
+        System.Console.WriteLine("Welcome to DeliveryService!");
+        System.Console.WriteLine("Choose your role: ");
+        System.Console.WriteLine("1 - Operator");
+        System.Console.WriteLine("2 - Customer");
+    }
+    
     public static void Render(MapState? map, Point<float>? robot, 
         float? angle, IReadOnlyCollection<Order> orders,
         Order? currentOrder, string lastEvent, string footer = "")
@@ -81,10 +90,10 @@ public static class ConsoleView
     {
         lock (ConsoleLock)
         {
-            var width = Math.Max(Console.WindowWidth - 1, 1);
+            var width = Math.Max(System.Console.WindowWidth - 1, 1);
             var lines = text.Split(["\r\n", "\n"], StringSplitOptions.None).ToList();
             lines.RemoveAt(lines.Count - 1);
-            lines = lines.Take(Math.Max(Console.WindowHeight - 1, 1)).ToList();
+            lines = lines.Take(Math.Max(System.Console.WindowHeight - 1, 1)).ToList();
 
             while (lines.Count < _lastLineCount)
             {
@@ -99,9 +108,9 @@ public static class ConsoleView
                 sb.AppendLine(line.Length > width ? line[..width] : line.PadRight(width));
             }
 
-            Console.CursorVisible = false;
-            Console.SetCursorPosition(0, 0);
-            Console.Write(sb.ToString());
+            System.Console.CursorVisible = false;
+            System.Console.SetCursorPosition(0, 0);
+            System.Console.Write(sb.ToString());
         }
     }
 }

@@ -1,4 +1,4 @@
-namespace DeliveryService.Client.Operator;
+namespace DeliveryService.Client.Core.Operator;
 
 public enum MoveDirection
 {

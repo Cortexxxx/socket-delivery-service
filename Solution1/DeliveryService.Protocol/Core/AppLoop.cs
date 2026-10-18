@@ -7,30 +7,55 @@ public abstract class AppLoop(UdpTransport udpTransport,
     ReceiveProcessor receiveProcessor, 
     ReliabilityLayer reliabilityLayer)
 {
-    public void Run()
+    public bool Started { get; private set; }
+    
+    /// <summary>
+    /// Runs loop in main thread with Thread.Sleep() inside
+    /// </summary>
+    public void RunLoop()
     {
         OnStart();
-
+        
         while (true)
         {
-            Tick();
-            reliabilityLayer.Tick(DateTime.UtcNow);
+            var isAnyPacketProceed = Step();
             
-            if (!udpTransport.TryReceive(out var receivedPacket))
+            if (!isAnyPacketProceed)
             {
                 Thread.Sleep(NetworkConfig.ReceiveLoopIntervalMilliseconds);
-                continue;
+            }
+        }
+    }
+
+    public bool Step()
+    {
+        Tick();
+        reliabilityLayer.Tick(DateTime.UtcNow);
+
+        var wasPacketProceed = false;
+        
+        for (int i = 0; i < NetworkConfig.MaxPacketsOnTick; i++)
+        {
+            if (!udpTransport.TryReceive(out var receivedPacket))
+            {
+                return wasPacketProceed;
             }
             
             if (!PacketLossSimulator.TryLosePacket(NetworkConfig.LosePacketChance) 
                 && Accept(receivedPacket))
             {
-                    receiveProcessor.ProcessPacket(receivedPacket);
+                receiveProcessor.ProcessPacket(receivedPacket);
+                wasPacketProceed = true;
             }
         }
+
+        return wasPacketProceed;
     }
-    
-    protected virtual void OnStart() { }
+
+    public virtual void OnStart()
+    {
+        Started = true;
+    }
     
     protected abstract void Tick();
     

@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DeliveryService.Client.Core\DeliveryService.Client.Core.csproj" />
       <ProjectReference Include="..\DeliveryService.Protocol\DeliveryService.Protocol.csproj" />
       <ProjectReference Include="..\DeliveryService.Robot\DeliveryService.Robot.csproj" />
     </ItemGroup>

@@ -1,10 +1,9 @@
-namespace DeliveryService.Client;
+namespace DeliveryService.Client.Core;
 
-public class ClientConfig
+public static class ClientConfig
 {
     // Intervals
     
-    public const int RenderIntervalMilliseconds = 200;
     public const float HeartbeatIntervalSeconds = 0.2f;
     public const int DriveTickIntervalMilliseconds = 50;
     

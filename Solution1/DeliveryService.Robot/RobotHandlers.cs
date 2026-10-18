@@ -23,7 +23,6 @@ public class RobotHandlers(RobotState state)
         {
             state.MoveTo(startPoint);
             state.IsRegistered = true;
-            state.LastEvent = $"Map received {message.Width}x{message.Height}";
         }
         else
         {
@@ -40,8 +39,5 @@ public class RobotHandlers(RobotState state)
     }
     
     [MessageHandler]
-    public void OnError(IPEndPoint sender, ErrorMessage message)
-    {
-        state.LastEvent = $"Error: {message.ErrorCode}";
-    }
+    public void OnError(IPEndPoint sender, ErrorMessage message) {}
 }

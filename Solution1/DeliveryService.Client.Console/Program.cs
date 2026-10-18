@@ -1,5 +1,6 @@
 ﻿using System.Net;
-using DeliveryService.Client;
+using DeliveryService.Client.Console;
+using DeliveryService.Client.Core;
 using DeliveryService.Protocol.Enums;
 using DeliveryService.Protocol.Network;
 
@@ -10,7 +11,7 @@ var clientState = new ClientState();
 
 while (!tryParse || clientState.Role == 0)
 {
-    DisplayClientStartMenu();
+    ConsoleView.DisplayClientStartMenu();
 
     tryParse = int.TryParse(Console.ReadLine(), out var roleInt);
     
@@ -30,16 +31,7 @@ var clientApp = new ClientApp(node.Transport,
     clientState, 
     serverEndpoint);
 
+var consoleApp = new ConsoleClientApp(clientApp);
 node.Transport.Start();
-clientApp.Run();
 
-return;
-
-void DisplayClientStartMenu()
-{
-    Console.Clear();
-    Console.WriteLine("Welcome to DeliveryService!");
-    Console.WriteLine("Choose your role: ");
-    Console.WriteLine("1 - Operator");
-    Console.WriteLine("2 - Customer");
-}
+consoleApp.Run();

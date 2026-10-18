@@ -5,7 +5,7 @@ using DeliveryService.Protocol.Map;
 using DeliveryService.Protocol.Messages;
 using DeliveryService.Protocol.Models;
 
-namespace DeliveryService.Client;
+namespace DeliveryService.Client.Core;
 
 public class ClientHandlers(ClientState clientState)
 {

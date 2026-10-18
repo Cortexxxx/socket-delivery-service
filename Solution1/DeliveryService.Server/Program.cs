@@ -23,4 +23,4 @@ var node = NetworkNodeFactory.Create(NetworkConfig.ServerPort,
 var serverApp = new ServerApp(node.Transport, node.Sender, serverSessions, node.ReceiveProcessor, node.ReliabilityLayer);
 
 node.Transport.Start();
-serverApp.Run();
+serverApp.RunLoop();

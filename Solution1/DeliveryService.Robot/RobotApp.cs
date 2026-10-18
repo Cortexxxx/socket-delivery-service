@@ -26,19 +26,8 @@ public class RobotApp(
     private readonly IntervalTimer _renderTimer = 
         new(TimeSpan.FromMilliseconds(RobotConfig.RenderIntervalMilliseconds));
 
-    protected override void OnStart()
-    {
-        Console.Clear();
-    }
-
     protected override void Tick()
     {
-        if (_renderTimer.IsDue())
-        {
-            ConsoleView.Render(state.MapState, state.Position, state.Angle, 
-                [], null, state.LastEvent);
-        }
-
         if (state.IsRegistered)
         {
             SendTelemetryIfDue();
@@ -48,7 +37,6 @@ public class RobotApp(
             if (CheckDeadManSwitch())
             {
                 state.CanDrive = false;
-                state.LastEvent = "Operator is dead!";
             }
             else
             {
