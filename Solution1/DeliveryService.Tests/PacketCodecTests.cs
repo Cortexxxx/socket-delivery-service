@@ -21,7 +21,7 @@ public class PacketCodecTests
 
         // Act
 
-        var result = _codec.TrySerializePacket(buffer, 0x1234, message, out var written);
+        var result = _codec.TrySerializePacket(buffer, 0x1234, message, out var written, out _);
 
         // Assert
 
@@ -40,7 +40,7 @@ public class PacketCodecTests
 
         // Act
 
-        var result = _codec.TrySerializePacket(buffer, 1, message, out var written);
+        var result = _codec.TrySerializePacket(buffer, 1, message, out var written, out _);
 
         // Assert
 
@@ -58,7 +58,7 @@ public class PacketCodecTests
 
         // Act
 
-        var result = _codec.TrySerializePacket(buffer, 1, message, out var written);
+        var result = _codec.TrySerializePacket(buffer, 1, message, out var written, out _);
 
         // Assert
 
@@ -77,7 +77,7 @@ public class PacketCodecTests
 
         // Act
 
-        var result = codec.TrySerializePacket(buffer, 1, message, out var written);
+        var result = codec.TrySerializePacket(buffer, 1, message, out var written, out _);
 
         // Assert
 
@@ -96,7 +96,7 @@ public class PacketCodecTests
 
         // Act
 
-        var result = codec.TrySerializePacket(buffer, 1, message, out var written);
+        var result = codec.TrySerializePacket(buffer, 1, message, out var written, out _);
 
         // Assert
 

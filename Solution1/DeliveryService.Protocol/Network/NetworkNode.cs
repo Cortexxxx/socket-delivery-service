@@ -7,4 +7,4 @@ namespace DeliveryService.Protocol.Network;
 public record NetworkNode(
     UdpTransport Transport,
     MessageSender Sender,
-    ReceiveProcessor ReceiveProcessor);
+    ReceiveProcessor ReceiveProcessor, ReliabilityLayer ReliabilityLayer);

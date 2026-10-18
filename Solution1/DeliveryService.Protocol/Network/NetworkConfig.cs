@@ -12,4 +12,11 @@ public static class NetworkConfig
     
     public const int ReceiveLoopIntervalMilliseconds = 10;
     public const int HelloRetryIntervalSeconds = 2;
+    public const int TryPendIntervalMilliseconds = 200;
+    
+    // Reliability
+    
+    public const float LosePacketChance = 0.2f;
+    public const int MaxPendingAttempts = 5;
+    public const int ReceivedSeqLifetimeSeconds = TryPendIntervalMilliseconds * (MaxPendingAttempts + 1) * 2;
 }

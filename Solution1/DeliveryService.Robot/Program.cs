@@ -6,7 +6,7 @@ IPEndPoint serverEndpoint = new(IPAddress.Parse(NetworkConfig.ServerHost), Netwo
 
 var robotState = new RobotState();
 var node = NetworkNodeFactory.Create(NetworkConfig.AnyPort, _ => new RobotHandlers(robotState));
-var robotApp = new RobotApp(node.Transport, node.Sender, robotState, node.ReceiveProcessor, serverEndpoint);
+var robotApp = new RobotApp(node.Transport, node.Sender, robotState, node.ReceiveProcessor, node.ReliabilityLayer, serverEndpoint);
 
 node.Transport.Start();
 robotApp.Run();

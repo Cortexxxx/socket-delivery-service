@@ -15,8 +15,10 @@ namespace DeliveryService.Client;
 public class ClientApp(
     UdpTransport udpTransport,
     MessageSender clientSender,
-    ReceiveProcessor receiveProcessor, ClientState state,
-    IPEndPoint serverEndpoint) : AppLoop(udpTransport, receiveProcessor)
+    ReceiveProcessor receiveProcessor, 
+    ReliabilityLayer reliabilityLayer,
+    ClientState state,
+    IPEndPoint serverEndpoint) : AppLoop(udpTransport, receiveProcessor, reliabilityLayer)
 {
     private readonly IntervalTimer _helloTimer 
         = new(TimeSpan.FromSeconds(NetworkConfig.HelloRetryIntervalSeconds));

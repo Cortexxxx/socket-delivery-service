@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Channels;
@@ -43,25 +44,15 @@ public sealed class UdpTransport : IDisposable
         _socket.Close();
     }
     
-    public bool TrySend(ushort seq, IPEndPoint address, IMessage message)
+    public bool TrySend(ushort seq, IPEndPoint address, IMessage message, 
+        [NotNullWhen(true)] out PacketHeader? header, out ReadOnlySpan<byte> messageBytes)
     {
         var trySerializePacket = _packetCodec.TrySerializePacket(
-            _sendBuffer, seq, message, out var written);
+            _sendBuffer, seq, message, out var written, out header);
+        messageBytes = _sendBuffer.AsSpan(0, written);
         
-        if (!trySerializePacket) return false;
-
-        try
-        {
-            _socket.SendTo(_sendBuffer.AsSpan(0, written), address);
-            _logger?.LogSend(address, _sendBuffer.AsSpan(0, written));
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return false;
-        }
-        
-        return true;
+        return trySerializePacket 
+               && TrySendRaw(address, _sendBuffer.AsSpan(0, written));
     }
 
     public bool TryReceive(out ReceivedPacket packet) => _receiveQueue.Reader.TryRead(out packet);
@@ -116,5 +107,21 @@ public sealed class UdpTransport : IDisposable
                 break;
             }
         }
+    }
+
+    public bool TrySendRaw(IPEndPoint destination, ReadOnlySpan<byte> pendingMessageBytes)
+    {
+        try
+        {
+            _socket.SendTo(pendingMessageBytes, destination);
+            _logger?.LogSend(destination, pendingMessageBytes);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
+
+        return true;
     }
 }

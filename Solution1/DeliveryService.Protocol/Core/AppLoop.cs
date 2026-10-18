@@ -3,7 +3,9 @@ using DeliveryService.Protocol.Network;
 
 namespace DeliveryService.Protocol.Core;
 
-public abstract class AppLoop(UdpTransport udpTransport, ReceiveProcessor receiveProcessor)
+public abstract class AppLoop(UdpTransport udpTransport, 
+    ReceiveProcessor receiveProcessor, 
+    ReliabilityLayer reliabilityLayer)
 {
     public void Run()
     {
@@ -12,16 +14,18 @@ public abstract class AppLoop(UdpTransport udpTransport, ReceiveProcessor receiv
         while (true)
         {
             Tick();
-
+            reliabilityLayer.Tick(DateTime.UtcNow);
+            
             if (!udpTransport.TryReceive(out var receivedPacket))
             {
                 Thread.Sleep(NetworkConfig.ReceiveLoopIntervalMilliseconds);
                 continue;
             }
-
-            if (Accept(receivedPacket))
+            
+            if (!PacketLossSimulator.TryLosePacket(NetworkConfig.LosePacketChance) 
+                && Accept(receivedPacket))
             {
-                receiveProcessor.ProcessPacket(receivedPacket);
+                    receiveProcessor.ProcessPacket(receivedPacket);
             }
         }
     }

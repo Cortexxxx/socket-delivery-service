@@ -28,9 +28,10 @@ public class PacketCodec(MessagesRegistry registry)
         return true;
     }
     
-    public bool TrySerializePacket(Span<byte> buffer, ushort seq, IMessage message, out int written)
+    public bool TrySerializePacket(Span<byte> buffer, ushort seq, IMessage message, out int written, out PacketHeader? header)
     {
         written = 0;
+        header = null;
         
         if (buffer.Length < HeaderConstants.HeaderSize) return false;
         
@@ -45,13 +46,15 @@ public class PacketCodec(MessagesRegistry registry)
         
         if (!trySerializePayload) return false;
         
-        var trySerializeHeader = PacketHeader.TrySerialize(new PacketHeader
+        header = new PacketHeader
         {
             Seq = seq,
             Flags = messageInfo.flags,
             MessageType = messageInfo.messageType,
             PayloadLength = (ushort)payloadWritten
-        }, buffer[..HeaderConstants.HeaderSize]);
+        };
+            
+        var trySerializeHeader = PacketHeader.TrySerialize(header.Value, buffer[..HeaderConstants.HeaderSize]);
 
         if (!trySerializeHeader) return false;
         

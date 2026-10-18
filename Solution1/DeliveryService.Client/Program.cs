@@ -26,6 +26,7 @@ var node = NetworkNodeFactory.Create(NetworkConfig.AnyPort,
 var clientApp = new ClientApp(node.Transport, 
     node.Sender, 
     node.ReceiveProcessor, 
+    node.ReliabilityLayer,
     clientState, 
     serverEndpoint);
 

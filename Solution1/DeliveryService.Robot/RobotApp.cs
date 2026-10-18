@@ -14,7 +14,8 @@ public class RobotApp(
     MessageSender robotSender,
     RobotState state,
     ReceiveProcessor receiveProcessor, 
-    IPEndPoint serverEndpoint) : AppLoop(udpTransport, receiveProcessor)
+    ReliabilityLayer reliabilityLayer,
+    IPEndPoint serverEndpoint) : AppLoop(udpTransport, receiveProcessor, reliabilityLayer)
 {
     private readonly IntervalTimer _telemetryTimer = 
         new(TimeSpan.FromMilliseconds(RobotConfig.SendTelemetryIntervalMilliseconds));

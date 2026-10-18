@@ -20,7 +20,7 @@ var mapState = new MapState(map, bitmaskMap, storagePoint);
 var node = NetworkNodeFactory.Create(NetworkConfig.ServerPort,
     sender => new ServerHandlers(serverSessions, sender, mapState, ordersService));
 
-var serverApp = new ServerApp(node.Transport, node.Sender, serverSessions, node.ReceiveProcessor);
+var serverApp = new ServerApp(node.Transport, node.Sender, serverSessions, node.ReceiveProcessor, node.ReliabilityLayer);
 
 node.Transport.Start();
 serverApp.Run();

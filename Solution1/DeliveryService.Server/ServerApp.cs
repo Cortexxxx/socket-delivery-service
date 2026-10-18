@@ -1,3 +1,4 @@
+using DeliveryService.Protocol;
 using DeliveryService.Protocol.Core;
 using DeliveryService.Protocol.Enums;
 using DeliveryService.Protocol.Helpers;
@@ -10,7 +11,8 @@ public class ServerApp(
     UdpTransport udpTransport,
     MessageSender serverSender,
     ServerSessions serverSessions,
-    ReceiveProcessor receiveProcessor) : AppLoop(udpTransport, receiveProcessor)
+    ReceiveProcessor receiveProcessor,
+    ReliabilityLayer reliabilityLayer) : AppLoop(udpTransport, receiveProcessor, reliabilityLayer)
 {
     private readonly IntervalTimer _checkTimer = new(TimeSpan.FromSeconds(ServerConfig.CheckTimeoutIntervalSeconds));
 
