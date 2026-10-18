@@ -29,7 +29,7 @@ public class ReceiveProcessor(MessageSender sender,
                 reliabilityLayer.TryRemovePendingPacket(((AckMessage)packet.Message).Seq,
                     packetSender);
                 break;
-            case MessageType.Hello when reliabilityLayer.IsPacketAlreadyReceived(seq, packetSender):
+            case MessageType.Hello when !reliabilityLayer.IsPacketAlreadyReceived(seq, packetSender):
                 reliabilityLayer.UpdateLatestSeq(packetSender, seq);
                 break;
         }
