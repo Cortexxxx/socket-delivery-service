@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="560"
+        x:Class="DeliveryService.Client.GUI.StartWindow"
+        Title="DeliveryService"
+        Width="420" Height="560"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid RowDefinitions="*,Auto" Margin="32 28">
+
+        <StackPanel Grid.Row="0" VerticalAlignment="Center">
+
+            <Border Classes="logo" HorizontalAlignment="Center">
+                <Image Source="avares://DeliveryService.Client.GUI/Assets/robot.png"
+                       Width="56" Height="56" />
+            </Border>
+
+            <TextBlock Classes="title" HorizontalAlignment="Center" Margin="0 20 0 0"
+                       Text="DeliveryService" />
+            <TextBlock Classes="muted" HorizontalAlignment="Center" Margin="0 4 0 32"
+                       Text="Remote delivery robot control" />
+
+            <TextBlock Classes="section" Margin="2 0 0 8" Text="CHOOSE YOUR ROLE" />
+
+            <StackPanel Spacing="10">
+
+                <Button x:Name="OperatorButton" Classes="role" Click="OnOperatorClick">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                        <Border Grid.Column="0" Classes="roleIcon" Background="#1F3B82F6">
+                            <Path Classes="icon" Fill="#3B82F6"
+                                  Data="M12 3.5a4.5 4.5 0 1 0 0 9a4.5 4.5 0 1 0 0-9zM3.5 21c0-4.7 3.8-7.5 8.5-7.5s8.5 2.8 8.5 7.5z" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="roleName" Text="Operator" />
+                        </StackPanel>
+                        <Path Grid.Column="2" Classes="chevron" Data="M9 5l7 7-7 7" />
+                    </Grid>
+                </Button>
+
+                <Button x:Name="CustomerButton" Classes="role" Click="OnCustomerClick">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                        <Border Grid.Column="0" Classes="roleIcon" Background="#1F30A46C">
+                            <Path Classes="icon" Fill="#30A46C"
+                                  Data="M12 3.5a4.5 4.5 0 1 0 0 9a4.5 4.5 0 1 0 0-9zM3.5 21c0-4.7 3.8-7.5 8.5-7.5s8.5 2.8 8.5 7.5z" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="roleName" Text="Customer" />
+                        </StackPanel>
+                        <Path Grid.Column="2" Classes="chevron" Data="M9 5l7 7-7 7" />
+                    </Grid>
+                </Button>
+
+            </StackPanel>
+        </StackPanel>
+
+        <TextBlock x:Name="StatusText" Grid.Row="1" Classes="muted"
+                   HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="12" />
+    </Grid>
+</Window>

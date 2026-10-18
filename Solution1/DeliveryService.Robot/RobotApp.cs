@@ -23,8 +23,6 @@ public class RobotApp(
         new(TimeSpan.FromSeconds(NetworkConfig.HelloRetryIntervalSeconds));
     private readonly IntervalTimer _driveTimer = 
         new(TimeSpan.FromMilliseconds(RobotConfig.DriveIntervalMilliseconds));
-    private readonly IntervalTimer _renderTimer = 
-        new(TimeSpan.FromMilliseconds(RobotConfig.RenderIntervalMilliseconds));
 
     protected override void Tick()
     {

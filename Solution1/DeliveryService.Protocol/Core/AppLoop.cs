@@ -60,4 +60,6 @@ public abstract class AppLoop(UdpTransport udpTransport,
     protected abstract void Tick();
     
     protected virtual bool Accept(ReceivedPacket receivedPacket) => true;
+
+    public void Stop() => udpTransport.Stop();
 }

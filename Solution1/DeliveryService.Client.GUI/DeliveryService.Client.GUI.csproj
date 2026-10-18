@@ -16,4 +16,28 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
     </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\DeliveryService.Client.Core\DeliveryService.Client.Core.csproj" />
+      <ProjectReference Include="..\DeliveryService.Protocol\DeliveryService.Protocol.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Compile Update="Windows\App.axaml.cs">
+        <DependentUpon>App.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Windows\StartWindow.axaml.cs">
+        <DependentUpon>StartWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Windows\MainWindow.axaml.cs">
+        <DependentUpon>MainWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
 </Project>

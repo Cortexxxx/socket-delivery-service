@@ -16,7 +16,7 @@ public static class NetworkConfig
     
     // Reliability
     
-    public const float LosePacketChance = 0.2f;
+    public const float LosePacketChance = 0.05f;
     public const int MaxPendingAttempts = 5;
     public const int ReceivedSeqLifetimeSeconds = TryPendIntervalMilliseconds * (MaxPendingAttempts + 1) * 2;
     public const int MaxPacketsOnTick = 50;

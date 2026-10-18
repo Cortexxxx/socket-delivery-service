@@ -1,0 +1,165 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="DeliveryService.Client.GUI.App"
+             RequestedThemeVariant="Default">
+    <Application.Styles>
+        <FluentTheme />
+
+        <Style Selector="TextBlock.title">
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style Selector="TextBlock.muted">
+            <Setter Property="Opacity" Value="0.65" />
+        </Style>
+
+        <Style Selector="Border.logo">
+            <Setter Property="Width" Value="88" />
+            <Setter Property="Height" Value="88" />
+            <Setter Property="CornerRadius" Value="24" />
+            <Setter Property="Background" Value="#1A3B82F6" />
+            <Setter Property="BorderBrush" Value="#403B82F6" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="Button.role">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="14" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Background" Value="#14808080" />
+            <Setter Property="BorderBrush" Value="#26808080" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Button.role:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#22808080" />
+            <Setter Property="BorderBrush" Value="#803B82F6" />
+        </Style>
+        <Style Selector="Button.role:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#2E808080" />
+            <Setter Property="BorderBrush" Value="#3B82F6" />
+        </Style>
+        <Style Selector="Button.role:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+
+        <Style Selector="Border.roleIcon">
+            <Setter Property="Width" Value="44" />
+            <Setter Property="Height" Value="44" />
+            <Setter Property="CornerRadius" Value="12" />
+        </Style>
+        <Style Selector="Path.icon">
+            <Setter Property="Width" Value="22" />
+            <Setter Property="Height" Value="22" />
+            <Setter Property="Stretch" Value="Uniform" />
+        </Style>
+        <Style Selector="Path.chevron">
+            <Setter Property="Width" Value="10" />
+            <Setter Property="Height" Value="14" />
+            <Setter Property="Stretch" Value="Uniform" />
+            <Setter Property="Stroke" Value="#808080" />
+            <Setter Property="StrokeThickness" Value="2" />
+            <Setter Property="StrokeLineCap" Value="Round" />
+            <Setter Property="StrokeJoin" Value="Round" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+
+        <Style Selector="TextBlock.roleName">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="TextBlock.roleHint">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+
+        <Style Selector="Border.sidebar">
+            <Setter Property="Background" Value="#14808080" />
+            <Setter Property="BorderBrush" Value="#33808080" />
+            <Setter Property="BorderThickness" Value="1 0 0 0" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="#14808080" />
+            <Setter Property="BorderBrush" Value="#26808080" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="14 12" />
+        </Style>
+
+        <Style Selector="TextBlock.section">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Opacity" Value="0.55" />
+        </Style>
+
+        <Style Selector="TextBlock.heading">
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style Selector="TextBlock.label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Opacity" Value="0.65" />
+        </Style>
+
+        <Style Selector="TextBlock.value">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+
+        <Style Selector="TextBlock.body">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="TextBlock.mono">
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace" />
+        </Style>
+
+        <Style Selector="TextBlock.hint">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Opacity" Value="0.55" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="2 12 2 0" />
+        </Style>
+
+        <Style Selector="Ellipse.dot">
+            <Setter Property="Width" Value="10" />
+            <Setter Property="Height" Value="10" />
+            <Setter Property="Fill" Value="#E5484D" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#3B82F6" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="14 9" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Button.primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#2563EB" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#1D4ED8" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.primary:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+
+        <Style Selector="NumericUpDown">
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace" />
+        </Style>
+    </Application.Styles>
+    
+</Application>
