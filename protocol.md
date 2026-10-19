@@ -4,7 +4,7 @@
 
 - Transport: **UDP**
 - Byte order: **little endian**
-- Types: `u8`, `u16` — unsigned, `i8` — signed, `f32` — IEEE 754 float
+- Types: `u8`, `u16` — unsigned, `i8` — signed, `f32` — float
 - Coordinates: 1 map cell = 1 m, origin in the top-left corner
 - Max packet size: **1200 bytes**
 
