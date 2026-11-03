@@ -8,7 +8,6 @@ public enum MessageType : byte
     Error = 0x04,
     Map = 0x10,
     Drive = 0x20,
-    Stop = 0x21,
     Telemetry = 0x30,
     OrderCreate = 0x40,
     OrderStatus = 0x41
